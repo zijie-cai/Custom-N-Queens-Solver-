@@ -12,9 +12,9 @@ The N-Queens problem involves placing N number of Queens on a size N x N chessbo
 - **Domain:**  
    - Columns for each row on the board
 - **Constraints:**
-   - No two Queens share the same row. 
-   - No two Queens share the same column. 
-   - No two Queens share the same diagonal (both directions).
+   - No two Queens can share the same row. 
+   - No two Queens can share the same column. 
+   - No two Queens can share the same diagonal (both directions).
    - Exactly N Queens on the board when a solution is found.
      
 ### Solve Methods
