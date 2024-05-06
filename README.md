@@ -25,8 +25,8 @@ For more details about each method, please refer to the comment section in the c
   - Minimum Remaining Values / Most Constraining Variable (MRV/MCV)
   - Least Constraining Value (LCV)
 - **Filtering Techniques:**
-  - Arc Consistency  
   - Forward Checking
+  - Arc Consistency  
 - **Combined Strategies**  
   - MRV + LCV
   - Ordering + Filtering
