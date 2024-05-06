@@ -38,4 +38,4 @@ For more details about each method, please refer to the comment section in the c
     pip install -r requirements.txt
     ```
 ## How to Use 
-Simply clone or download the repository and follow the `vis_tool.ipynb` Jupyter Notebook.
+Simply clone the repository and follow the `vis_tool.ipynb` Jupyter Notebook.
