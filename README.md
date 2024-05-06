@@ -8,4 +8,4 @@ This repository showcases an intuitive visualization tool for understanding the 
     pip install -r requirements.txt
     ```
 ## How to Use 
-Simply clone or download the repository and follow the `main.ipynb` Jupyter Notebook.
+Simply clone or download the repository and follow the `vis_tool.ipynb` Jupyter Notebook.
