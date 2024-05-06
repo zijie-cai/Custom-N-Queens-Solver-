@@ -1,5 +1,6 @@
 # ♕ Custom N-Queens Solver ♕
 This repository showcases an intuitive visualization tool for understanding the effects of Algorithms, Ordering Heuristics, and Filtering Techniques while solving N-Queens as a Constraint Satisfaction Problem (CSP).
+![Visualization Tool](vis_tool.png)
 
 ## Overview 
 The N-Queens problem involves placing N number of Queens on a size N x N chessboard in a way such that no two Queens threaten each other. The approach is to formulate this as a CSP problem, where the goal is to find a satisfying solution without violating any constraints. 
