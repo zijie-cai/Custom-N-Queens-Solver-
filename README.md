@@ -7,7 +7,7 @@ The N-Queens problem involves placing N number of Queens on a size N x N chessbo
 ### CSP Formulation
 
 **Variables:** 
-    - Rows on the board; the algorithm finds a solution by traversing through the board row by row (default).
+   - Rows on the board; the algorithm finds a solution by traversing through the board row by row (default).
 
 **Domain:**  
    - Columns for each row on the board; the algorithm finds a solution by whether a column spot is safe/unthreatened. 
