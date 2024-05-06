@@ -1,5 +1,5 @@
 # ♕ Custom N-Queens Solver ♕
-This repository showcases an intuitive visualization tool for understanding the effects of Algorithms, Ordering Heuristics, and Filtering Techniques while solving N-Queens as a Constraint Satisfaction Problem (CSP).
+This repository showcases an intuitive visualization tool for understanding the various effects of Algorithms, Ordering Heuristics, and Filtering Techniques while solving N-Queens as a Constraint Satisfaction Problem (CSP).
 
 <img src="vis_tool.png" width="550"/>
 
