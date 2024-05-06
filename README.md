@@ -6,32 +6,32 @@ The N-Queens problem involves placing N number of Queens on a size N x N chessbo
 
 ### CSP Formulation
 
-**Variables:** 
+- **Variables:** 
    - Rows on the board; the algorithm finds a solution by traversing through the board row by row (default).
 
-**Domain:**  
+- **Domain:**  
    - Columns for each row on the board; the algorithm finds a solution by whether a column spot is safe/unthreatened. 
 
-**Constraints:**
+- **Constraints:**
    - No two Queens can be in the same row. 
    - No two Queens can be in the same column. 
    - No two Queens can be on the same diagonal (both directions).
    - Exactly N Queens on the board when a solution is found.
 
-### Algorithms
-- **Backtracking Search:**  
+### Solve Methods
+- **Algorithm**
+  - Backtracking Search  
 
 - **Ordering Heuristics:**
-  - **Minimum Remaining Values (MRV/MCV):**  
-  - **Least Constraining Value (LCV):**  
+  - Minimum Remaining Values / Most Constraining Variable (MRV/MCV)
+  - Least Constraining Value (LCV)
 
 - **Filtering Techniques:**
-  - **Arc Consistency:**  
-  
-  - **Forward Checking:**
-
-- **Combined Strategies:**  
-
+  - Arc Consistency  
+  - Forward Checking
+- **Combined Strategies**  
+  - MRV + LCV
+  - Ordering + Filtering
 
 ## Installation and Setup 
 - Create and activate a virtual environment (to your liking):
