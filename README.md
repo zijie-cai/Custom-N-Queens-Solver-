@@ -19,7 +19,7 @@ The N-Queens problem involves placing N number of Queens on a size N x N chessbo
      
 ### Solve Methods
 For more details about each method, please refer to the comment section in the corresponding py file. 
-- **Algorithm**
+- **Algorithms**
   - Backtracking Search  
 - **Ordering Heuristics:**
   - Minimum Remaining Values / Most Constraining Variable (MRV/MCV)
