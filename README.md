@@ -4,7 +4,7 @@ This repository showcases an intuitive visualization tool for understanding the 
 <img src="vis_tool.png" width="550"/>
 
 ## Overview 
-The N-Queens problem involves placing N number of Queens on a size N x N chessboard in a way such that no two Queens can threaten each other. The approach is to formulate N-Queens as a CSP problem, where the objective is to find a solution that satisfies all pre-defined constraints.
+The N-Queens problem involves placing N number of Queens on a size N x N chessboard in a way such that no two Queens can threaten each other. The approach is to formulate N-Queens as a CSP problem, where the objective is to find a solution of Queen placements on the board that satisfies all pre-defined constraints.
 
 ### CSP Formulation
 - **Variables:** 
