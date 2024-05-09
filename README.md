@@ -32,11 +32,14 @@ For more details about each method, please refer to the comment section in the c
   - MRV + LCV
   - Ordering + Filtering
 
-## Installation and Setup 
+## How to Use
+- Clone the repository
 - Create and activate a virtual environment (to your liking):
 - Install required libraries using pip:
     ```bash
     pip install -r requirements.txt
     ```
-## How to Use 
-Simply clone the repository and follow the `vis_tool.ipynb` Jupyter Notebook.
+- Run the following command for web app:
+    ```bash
+    voila vis_tool.ipynb
+    ```
