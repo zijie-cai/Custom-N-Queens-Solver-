@@ -7,7 +7,7 @@ This repository showcases an intuitive visualization tool for understanding the 
 ## Quick Access
 You can access this visualization tool hosted on Binder without the need to install anything locally.
 
-**Note:** Currently, the web app interface is optimized for usage on computers and may not function properly on mobile devices.
+**Note:** Currently, the web app interface is optimized for computers. Will add support for mobile devices in the future.
 
 **Launch the Web App:** [N-Queens](https://mybinder.org/v2/gh/zijie-cai/Custom_N-Queens_Solver/HEAD?urlpath=%2Fvoila%2Frender%2Fvis_tool.ipynb)
 
