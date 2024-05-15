@@ -37,11 +37,14 @@ For more details about each method, please refer to the comment section in the c
   - MRV + LCV
   - Ordering + Filtering
 
-## How to Customize
+## How to Use Locally
 - Clone the repository
 - Create and activate a virtual Python environment (to your liking):
 - Install required libraries using pip:
     ```bash
     pip install -r requirements.txt
     ```
-- Navigate through vis_tool.ipynb and all dependent py files
+    
+## Potential Improvements
+- Enhance the N-Queens Game by adding more constraints
+- Add support for more solver algorithms
