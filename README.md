@@ -5,7 +5,7 @@ This repository showcases an intuitive visualization tool for understanding the 
 <img src="demo(2).png" width="550"/>
 
 ## Quick Access
-You can access the visualization tool hosted on Binder without the need to install anything locally.
+You can access this visualization tool hosted on Binder without the need to install anything locally.
 
 **Launch the web app:** [N-Queens](https://mybinder.org/v2/gh/zijie-cai/Custom_N-Queens_Solver/HEAD?urlpath=%2Fvoila%2Frender%2Fvis_tool.ipynb)
 
@@ -37,7 +37,7 @@ For more details about each method, please refer to the comment section in the c
   - MRV + LCV
   - Ordering + Filtering
 
-## How to Use Locally
+## Use Locally
 - Clone the repository
 - Create and activate a virtual Python environment (to your liking):
 - Install required libraries using pip:
