@@ -4,6 +4,11 @@ This repository showcases an intuitive visualization tool for understanding the 
 <img src="demo(1).png" width="550"/>
 <img src="demo(2).png" width="550"/>
 
+## Quick Access
+You can access the live version of this visualization tool hosted on Binder without the need to install anything locally.
+
+**Launch the web app:** [Open Voilà Web App](https://mybinder.org/v2/gh/zijie-cai/Custom_N-Queens_Solver/HEAD?urlpath=%2Fvoila%2Frender%2Fvis_tool.ipynb)
+
 ## Overview 
 The N-Queens problem involves placing N number of Queens on a size N x N chessboard in a way such that no two Queens can threaten each other. The approach is to formulate N-Queens as a CSP problem, where the objective is to find a solution of Queen placements on the board that satisfies all pre-defined constraints.
 
@@ -38,8 +43,4 @@ For more details about each method, please refer to the comment section in the c
 - Install required libraries using pip:
     ```bash
     pip install -r requirements.txt
-    ```
-- Run the following command for web app:
-    ```bash
-    voila vis_tool.ipynb
     ```
