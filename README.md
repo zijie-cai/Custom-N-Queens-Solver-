@@ -10,7 +10,8 @@ You can access this visualization tool hosted on Binder without the need to inst
 **Note:** Currently, the web app is optimized for computers. Will add support for mobile devices in the future.
 
 **Launch the Web App (PC):** [N-Queens-PC](https://mybinder.org/v2/gh/zijie-cai/Custom_N-Queens_Solver/HEAD?urlpath=%2Fvoila%2Frender%2Fvis_tool.ipynb)
-**Launch the Web App (Mobile):** [N-Queens-Mobile] (https://mybinder.org/v2/gh/zijie-cai/Custom_N-Queens_Solver/HEAD?urlpath=%2Fvoila%2Frender%2Fmobile.ipynb)
+
+**Launch the Web App (Mobile):** [N-Queens-Mobile](https://mybinder.org/v2/gh/zijie-cai/Custom_N-Queens_Solver/HEAD?urlpath=%2Fvoila%2Frender%2Fmobile.ipynb)
 
 ## Overview 
 The N-Queens problem involves placing N number of Queens on a size N x N chessboard in a way such that no two Queens can threaten each other. The approach is to formulate N-Queens as a CSP problem, where the objective is to find a solution of Queen placements on the board that satisfies all pre-defined constraints.
