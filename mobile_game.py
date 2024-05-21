@@ -232,6 +232,8 @@ class N_Queens_Game:
             self.ax.set_title(f"{self.n}-Queens")
         self.ax.invert_yaxis()
 
+        self.fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
         # Print threats values on game board if hint is checked
         if self.hint:
             for y in range(self.n):
