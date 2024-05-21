@@ -51,7 +51,7 @@ class N_Queens_Game:
 
         # Initialize interactive matplotlib figure for N-Queens Game
         with plt.ioff():
-            self.fig, self.ax = plt.subplots(figsize=(3, 3))
+            self.fig, self.ax = plt.subplots(figsize=(4, 4))
             self.fig.canvas.toolbar_visible = False
             self.fig.canvas.header_visible = False
             self.fig.canvas.footer_visible = False
@@ -98,7 +98,7 @@ class N_Queens_Game:
         self.size = widgets.BoundedIntText(
             value=self.n,
             min=4,
-            max=32,
+            max=16,
             step=1,
             description="Size of N:",
             style={"font_size": "15px"},
