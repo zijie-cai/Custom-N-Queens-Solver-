@@ -162,7 +162,7 @@ class N_Queens_Game:
                         self.fig.canvas,  # Game board fig
                         user_control,  # User control panel
                     ],
-                    layout=Layout(margin="0px 0px 0 20px"),
+                    layout=Layout(margin="0px 0px 0 22px"),
                 )
             )
 
