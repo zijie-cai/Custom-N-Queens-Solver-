@@ -51,7 +51,7 @@ class N_Queens_Game:
 
         # Initialize interactive matplotlib figure for N-Queens Game
         with plt.ioff():
-            self.fig, self.ax = plt.subplots(figsize=(2.7, 3.0))
+            self.fig, self.ax = plt.subplots(figsize=(3.0, 3.2))
             self.fig.canvas.toolbar_visible = False
             self.fig.canvas.header_visible = False
             self.fig.canvas.footer_visible = False
