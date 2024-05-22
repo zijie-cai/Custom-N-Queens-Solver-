@@ -102,7 +102,7 @@ class N_Queens_Game:
             step=1,
             description="Size of N:",
             style={"font_size": "15px"},
-            layout=widgets.Layout(width="200px", margin="0 0 0 5px"),
+            layout=widgets.Layout(width="200px", margin="10px 0 0 5px"),
         )
 
         # Output area for game board fig and user controls
