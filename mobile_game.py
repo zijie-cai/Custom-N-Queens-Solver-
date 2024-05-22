@@ -113,7 +113,7 @@ class N_Queens_Game:
 
     def setup(self):
         # Reset button for the game
-        self.reset = Button(description="New / Reset")
+        self.reset = Button(description="New")
         self.reset.on_click(self.new_reset)
 
         # Checkbox for hint of the game
