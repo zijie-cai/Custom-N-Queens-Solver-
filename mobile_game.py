@@ -146,7 +146,7 @@ class N_Queens_Game:
 
         # Combine all above widgets vertically for user control game panel
         user_control = VBox(
-            [self.size, button_row, stats_box], layout=Layout(margin="20px")
+            [self.size, button_row, stats_box], layout=Layout(margin="0 0 0 25px")
         )
 
         # Store title into a box for shifting position
