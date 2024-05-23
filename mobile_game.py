@@ -91,7 +91,7 @@ class N_Queens_Game:
         # Widget for title
         self.title = widgets.Label(
             value="N-Queens Playground",
-            style={"font_weight": "bold", "font_size": "15px"},
+            style={"font_weight": "bold", "font_size": "20px"},
             layout=widgets.Layout(margin="0 0 10px 15px"),
         )
 
