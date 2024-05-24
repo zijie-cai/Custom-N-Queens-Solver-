@@ -130,7 +130,7 @@ class N_Queens_Solver_MRV_LCV:
         board[::2, 1::2] = 1  # Dark/Green squares
         queen_img = plt.imread("queen.png")  # Load queen image piece
 
-        zoom_factor = 0.05 * 7 / self.n  # Adjust size of queen image piece
+        zoom_factor = 0.05 * 6 / self.n  # Adjust size of queen image piece
 
         ax.clear()  # Clear axis
 
