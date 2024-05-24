@@ -193,7 +193,7 @@ class N_Queens_Solver_FC:
         self.progress += 1
 
         # Set threshold to only save last 20 image steps if exceeded
-        total_img = 20 if self.num_img > 20 else self.num_img
+        total_img = 10 if self.num_img > 10 else self.num_img
 
         # Update progress bar
         if self.progress <= self.num_img:
@@ -242,7 +242,7 @@ class N_Queens_Solver_FC:
 
                 # Generate visualization if vis flag is True
                 if self.vis and (
-                    self.step_number > self.num_img - 20 or self.num_img <= 20
+                    self.step_number > self.num_img - 10 or self.num_img <= 10
                 ):  # Save last 20 steps
                     self.visualize_step()
 
@@ -259,7 +259,7 @@ class N_Queens_Solver_FC:
 
                 # Generate visualization if vis flag is True
                 if self.vis and (
-                    self.step_number > self.num_img - 20 or self.num_img <= 20
+                    self.step_number > self.num_img - 10 or self.num_img <= 10
                 ):  # Save last 20 steps
                     self.visualize_step()
 

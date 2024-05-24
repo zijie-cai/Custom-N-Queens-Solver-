@@ -322,7 +322,7 @@ def N_Queens_Solver_Vis():
 
             # Threshold for saving last max_img step images for visualization
             max_img = (
-                20 if solver_no_vis.step_number > 20 else solver_no_vis.step_number
+                10 if solver_no_vis.step_number > 10 else solver_no_vis.step_number
             )
 
             # Progress bar for tracking visualization generation
