@@ -114,13 +114,11 @@ class N_Queens_Game:
 
     def setup(self):
         # Reset button for the game
-        self.reset = Button(description="New")
+        self.reset = Button(description="New", layout=Layout(width="100px"))
         self.reset.on_click(self.new_reset)
 
         self.hint_check = widgets.Checkbox(value=False, indent=False)
-        hint_label = widgets.Label(
-            "Hint", layout=Layout(margin="0px 0 0 -285px", width="auto")
-        )
+        hint_label = widgets.Label("Hint", layout=Layout(margin="0px 0 0 -285px"))
         self.hint_widget = HBox(
             [self.hint_check, hint_label],
             layout=Layout(width="100%", margin="2.5px 0 0 20px"),
@@ -132,7 +130,7 @@ class N_Queens_Game:
         )
         self.ai_widget = HBox(
             [self.ai_check, ai_label],
-            layout=Layout(width="100%", margin="2.5px 0 0 -1045px"),
+            layout=Layout(width="100%", margin="2.5px 0 0 -575px"),
         )
 
         # Linking the observe method to the checkbox widgets
