@@ -139,7 +139,7 @@ class N_Queens_Game:
 
         # Combine reset button and hint checkbox horizontally
         button_row = HBox(
-            [self.reset, self.ai_widget],
+            [self.reset, self.hint_widget, self.ai_widget],
             layout=Layout(margin="20px 0px 5px 25px"),
         )
 
