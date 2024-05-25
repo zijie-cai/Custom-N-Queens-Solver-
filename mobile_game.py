@@ -130,7 +130,7 @@ class N_Queens_Game:
         )
         self.ai_widget = HBox(
             [self.ai_check, ai_label],
-            layout=Layout(width="100%", margin="2.5px 0 0 -1275px"),
+            layout=Layout(width="100%", margin="2.5px 0 0 -1075px"),
         )
 
         # Linking the observe method to the checkbox widgets
