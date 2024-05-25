@@ -114,23 +114,21 @@ class N_Queens_Game:
 
     def setup(self):
         # Reset button for the game
-        self.reset = Button(description="New", layout=Layout(width="100px"))
+        self.reset = Button(description="New", layout=Layout(width="150px"))
         self.reset.on_click(self.new_reset)
 
         self.hint_check = widgets.Checkbox(value=False, indent=False)
         hint_label = widgets.Label("Hint", layout=Layout(margin="0px 0 0 -285px"))
         self.hint_widget = HBox(
             [self.hint_check, hint_label],
-            layout=Layout(width="100%", margin="2.5px 0 0 20px"),
+            layout=Layout(width="100%", margin="2.5px 0 0 20px", overflow="hidden"),
         )
 
         self.ai_check = widgets.Checkbox(value=False, indent=False)
-        ai_label = widgets.Label(
-            "AI", layout=Layout(margin="0px 0 0 -285px", width="auto")
-        )
+        ai_label = widgets.Label("AI", layout=Layout(margin="0px 0 0 -285px"))
         self.ai_widget = HBox(
             [self.ai_check, ai_label],
-            layout=Layout(width="100%", margin="2.5px 0 0 -610px"),
+            layout=Layout(width="100%", margin="2.5px 0 0 -75px", overflow="hidden"),
         )
 
         # Linking the observe method to the checkbox widgets
@@ -140,7 +138,7 @@ class N_Queens_Game:
         # Combine reset button and hint checkbox horizontally
         button_row = HBox(
             [self.reset, self.hint_widget, self.ai_widget],
-            layout=Layout(margin="20px 0px 5px 25px"),
+            layout=Layout(margin="20px 0px 5px 25px", width="300px"),
         )
 
         # Combine game stats widgets vertically
