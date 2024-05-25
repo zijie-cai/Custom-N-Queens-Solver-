@@ -92,7 +92,7 @@ class N_Queens_Game:
         self.title = widgets.Label(
             value="N-Queens Playground",
             style={"font_weight": "bold", "font_size": "20px"},
-            layout=widgets.Layout(margin="10px 0 0px px"),
+            layout=widgets.Layout(margin="10px 0 0px 0px"),
         )
 
         # Widget for user-input of size N
@@ -117,20 +117,31 @@ class N_Queens_Game:
         self.reset = Button(description="New")
         self.reset.on_click(self.new_reset)
 
-        # Checkbox for hint of the game
-        self.hint_check = widgets.Checkbox(
-            value=False,
-            description="Hint",
-            indent=False,
-            layout=Layout(margin="5px 0px 0 15px"),
+        self.hint_check = widgets.Checkbox(value=False, indent=False)
+        hint_label = widgets.Label(
+            "Hint", layout=Layout(margin="0px 0 0 -285px", width="auto")
+        )
+        self.hint_widget = HBox(
+            [self.hint_check, hint_label],
+            layout=Layout(width="100%", margin="2.5px 0 0 20px"),
         )
 
-        # Observe hint checkbox value and update board game fig
+        self.ai_check = widgets.Checkbox(value=False, indent=False)
+        ai_label = widgets.Label(
+            "AI", layout=Layout(margin="0px 0 0 -285px", width="auto")
+        )
+        self.ai_widget = HBox(
+            [self.ai_check, ai_label],
+            layout=Layout(width="100%", margin="2.5px 0 0 -545px"),
+        )
+
+        # Linking the observe method to the checkbox widgets
         self.hint_check.observe(self.observe_hint, names="value")
+        self.ai_check.observe(self.observe_ai, names="value")
 
         # Combine reset button and hint checkbox horizontally
         button_row = HBox(
-            [self.reset, self.hint_check],
+            [self.reset, self.hint_widget, self.ai_widget],
             layout=Layout(margin="20px 0px 5px 25px"),
         )
 
@@ -175,6 +186,11 @@ class N_Queens_Game:
         self.hint = change["new"]
         self.visualize_board()
 
+    # Observe AI checkbox
+    def observe_ai(self, change):
+        if change["new"]:
+            self.start_ai_solver()
+
     # Reset game stats and game board fig
     def new_reset(self, change=None):
         # Switch start flag to false
@@ -189,6 +205,7 @@ class N_Queens_Game:
         self.steps.value = f"Total Steps: {self.step_number}"
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+        self.ai_check.value = False
 
         self.visualize_board()
 
@@ -298,603 +315,201 @@ class N_Queens_Game:
             if len(self.positions) == self.n:
                 self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
             else:
+                self.ai_check.value = False
                 self.solution.value = ""
 
+    def count_safe_spots_for_board(self, row, col):
+        board_copy = [r[:] for r in self.board]
+        board_copy[row][col] = 1  # Place the Queen hypothetically
+        safe_spots = 0
+        for r in range(self.n):
+            for c in range(self.n):
+                if self.is_safe(board_copy, r, c):
+                    safe_spots += 1
+        return safe_spots
 
-"""
-This module sets up the visualization tool and runs the N-Queens Solver based on
-user input for size (N) and methods (Algorithm + Ordering + Filtering).
-"""
+    def is_safe(self, board, row, col):
+        for i in range(self.n):
+            if board[i][col] == 1 and i != row:
+                return False
+        for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+            if board[i][j] == 1:
+                return False
+        for i, j in zip(range(row, self.n, 1), range(col, -1, -1)):
+            if board[i][j] == 1:
+                return False
+        for i, j in zip(range(row, -1, -1), range(col, self.n, 1)):
+            if board[i][j] == 1:
+                return False
+        for i, j in zip(range(row, self.n, 1), range(col, self.n, 1)):
+            if board[i][j] == 1:
+                return False
+        return True
 
-# Import libraries
-import ipywidgets as widgets
-from IPython.display import clear_output, display
+    def update_threats(self, threats, row, col):
+        threats[row][col] += 1
+        for i in range(row):
+            threats[i][col] += 1
+        for i in range(row + 1, self.n):
+            threats[i][col] += 1
+        for j in range(col):
+            threats[row][j] += 1
+        for j in range(col + 1, self.n):
+            threats[row][j] += 1
+        for i, j in zip(range(row + 1, self.n), range(col - 1, -1, -1)):
+            threats[i][j] += 1
+        for i, j in zip(range(row + 1, self.n), range(col + 1, self.n)):
+            threats[i][j] += 1
+        for i, j in zip(range(row - 1, -1, -1), range(col - 1, -1, -1)):
+            threats[i][j] += 1
+        for i, j in zip(range(row - 1, -1, -1), range(col + 1, self.n, 1)):
+            threats[i][j] += 1
 
-# Import N-Queens Solvers
-from base import N_Queens_Solver
+    def backtrack_threats(self, threats, row, col):
+        threats[row][col] -= 1
+        for i in range(row):
+            threats[i][col] -= 1
+        for i in range(row + 1, self.n):
+            threats[i][col] -= 1
+        for j in range(col):
+            threats[row][j] -= 1
+        for j in range(col + 1, self.n):
+            threats[row][j] -= 1
+        for i, j in zip(range(row + 1, self.n), range(col - 1, -1, -1)):
+            threats[i][j] -= 1
+        for i, j in zip(range(row + 1, self.n), range(col + 1, self.n)):
+            threats[i][j] -= 1
+        for i, j in zip(range(row - 1, -1, -1), range(col - 1, -1, -1)):
+            threats[i][j] -= 1
+        for i, j in zip(range(row - 1, -1, -1), range(col + 1, self.n, 1)):
+            threats[i][j] -= 1
 
-# Ordering
-from mrv import N_Queens_Solver_MRV
-from lcv import N_Queens_Solver_LCV
-from mrv_lcv import N_Queens_Solver_MRV_LCV
+    def look_ahead(self, threats, row):
+        safe = False
+        for j in range(self.n):
+            if threats[row][j] == 0:
+                safe = True
+                break
+        return safe
 
-# Filtering
-from fc import N_Queens_Solver_FC
-from ac import N_Queens_Solver_AC
+    def arc_consistency(self, row):
+        prune = []
+        row_threats = self.threats[row]
+        used_rows_copy = self.used_rows.copy()
+        used_rows_copy.add(row)
+        safe_cols = [index for index, threats in enumerate(row_threats) if threats == 0]
+        for j in safe_cols:
+            threats_copy = [r[:] for r in self.threats]
+            self.update_threats(threats_copy, row, j)
+            for i in range(self.n):
+                if i not in used_rows_copy:
+                    if not self.look_ahead(threats_copy, i):
+                        prune.append(j)
+                        break
+        return prune
 
-# Ordering + Forward Checking
-from mrv_fc import N_Queens_Solver_MRV_FC
-from lcv_fc import N_Queens_Solver_LCV_FC
-from mrv_lcv_fc import N_Queens_Solver_MRV_LCV_FC
+    def find_row_with_mrv(self):
+        mrv = float("inf")
+        mrv_row = None
+        for row in range(self.n):
+            if row not in self.used_rows:
+                row_threats = self.threats[row]
+                safe_cols = [
+                    index for index, threats in enumerate(row_threats) if threats == 0
+                ]
+                safe_spots = len(safe_cols)
+                if safe_spots < mrv:
+                    mrv = safe_spots
+                    mrv_row = row
+        return mrv_row
 
-# Ordering + Arc Consistency
-from mrv_ac import N_Queens_Solver_MRV_AC
-from lcv_ac import N_Queens_Solver_LCV_AC
-from mrv_lcv_ac import N_Queens_Solver_MRV_LCV_AC
+    def solve_n_queens_util(self):
+        if len(self.used_rows) == self.n:
+            return True
+        mrv_row = self.find_row_with_mrv()
+        prune = self.arc_consistency(mrv_row)
+        col_lcv = []
+        for col in range(self.n):
+            if self.is_safe(self.board, mrv_row, col):
+                lcv = self.count_safe_spots_for_board(mrv_row, col)
+                col_lcv.append((col, lcv))
+        col_lcv.sort(key=lambda x: x[1])
+        for col, _ in col_lcv:
+            if col not in prune:
+                self.board[mrv_row][col] = 1
+                self.update_threats(self.threats, mrv_row, col)
+                self.positions.add((mrv_row, col))
+                self.used_rows.add(mrv_row)
+                self.step_number += 1
+                self.queen_placement += 1
+                if self.solve_n_queens_util():
+                    return True
+                self.board[mrv_row][col] = 0
+                self.backtrack_threats(self.threats, mrv_row, col)
+                self.positions.remove((mrv_row, col))
+                self.used_rows.remove(mrv_row)
+                self.step_number += 1
+                self.backtracking += 1
+        return False
 
+    def solve(self):
+        # Initialize the board with zeros and place the existing queens
+        self.board = [[0] * self.n for _ in range(self.n)]
+        for r, c in self.positions:
+            self.board[r][c] = 1
 
-# Sets up visualization tool to run the N-Queens Solver
-def N_Queens_Solver_Vis():
+        # Initialize threats and used rows based on current positions
+        self.update_threats_matrix()  # Assuming update_threats_matrix populates self.threats
+        self.used_rows = set(r for (r, c) in self.positions)
 
-    title = widgets.Label(
-        value="Custom N-Queens Solver",
-        style={"font_weight": "bold", "font_size": "20px"},
-        layout=widgets.Layout(margin="0 0 0 70px"),
-    )
+        # Set the initial counters based on the existing setup
+        # self.step_number = 0
+        # self.queen_placement = len(self.positions)
+        # self.backtracking = 0
 
-    # User input size N for chessboard
-    size = widgets.BoundedIntText(
-        value=8,
-        min=4,
-        max=32,
-        step=1,
-        description="Size of N:",
-        layout=widgets.Layout(width="200px", margin="10px 0 10px 50px"),
-    )
+        # Run the utility solver
+        if not self.solve_n_queens_util():
+            # If no solution found from the current state, clear and start over
+            self.positions.clear()
+            self.used_rows.clear()
+            self.board = [[0] * self.n for _ in range(self.n)]
+            self.threats = [[0] * self.n for _ in range(self.n)]
+            self.solve_n_queens_util()
 
-    # Dropdown list for algorithm options
-    algorithm_opt = widgets.RadioButtons(
-        options=["Backtracking"],
-        description="Algorithm:",
-        layout=widgets.Layout(margin="0 0 0 72px"),
-    )
+        self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
+        self.visualize_board()
 
-    # Dropdown list for ordering options
-    ordering_opt = widgets.RadioButtons(
-        options=["None", "MRV", "LCV", "MRV + LCV"],
-        description="Ordering:",
-        layout=widgets.Layout(margin="8px 0 0 72px"),
-    )
+    def update_threats_matrix(self):
+        # Initialize the threats matrix with zeros
+        self.threats = [[0] * self.n for _ in range(self.n)]
 
-    # Dropdown list for filtering options
-    filtering_opt = widgets.RadioButtons(
-        options=["None", "Forward Checking", "Arc Consistency"],
-        description="Filtering:",
-        layout=widgets.Layout(margin="0 0 0 72px"),
-    )
+        # Compute threats for each cell based on current positions
+        for r, c in self.positions:
+            self.update_threats(self.threats, r, c)
 
-    # Click button to run the N-Queens Solver
-    solve_button = widgets.Button(
-        description="Solve N-Queens", layout=widgets.Layout(margin="8px 0 8px 72px")
-    )
+    def update_threats(self, threats, row, col):
+        # Increment threats for all affected cells by placing a queen at (row, col)
+        for i in range(self.n):
+            # Same row and column
+            threats[row][i] += 1
+            threats[i][col] += 1
+            # Diagonals
+            if row + i < self.n and col + i < self.n:
+                threats[row + i][col + i] += 1
+            if row - i >= 0 and col - i >= 0:
+                threats[row - i][col - i] += 1
+            if row + i < self.n and col - i >= 0:
+                threats[row + i][col - i] += 1
+            if row - i >= 0 and col + i < self.n:
+                threats[row - i][col + i] += 1
+        threats[row][col] -= 3  # Remove overcounted threats for the queen's own cell
 
-    # Split the output area into left and right
-    left_output_area = widgets.Output()
-    right_output_area = widgets.Output()
-
-    # Combine all widgets above vertically in list order for left output area
-    left_box = widgets.VBox(
-        [
-            title,
-            size,
-            algorithm_opt,
-            ordering_opt,
-            filtering_opt,
-            solve_button,
-            left_output_area,
-        ]
-    )
-
-    # Define widget in vertical list order for right output area
-    right_box = widgets.VBox([right_output_area])
-
-    # Define widget for image display area
-    img_output_area = widgets.Output()
-
-    # Define function to run the N-Queens Solver when solve_button is clicked
-    def click_solve_button(b):
-
-        # Display for left output area (under solve_button)
-        with left_output_area:
-            clear_output(wait=True)  # Clear the output area before display
-            n = size.value  # User input for N
-            algorithm = algorithm_opt.value  # User input for algorithm
-            ordering = ordering_opt.value  # User input for ordering
-            filtering = filtering_opt.value  # User input for filtering
-
-            # Start solving
-            print(f"        Finding Solution to {n}-Queens...")
-            print()
-
-            # Initialize N-Queens Solver based on user input (no visualization)
-            # Baseline
-            if (
-                algorithm == "Backtracking"
-                and ordering == "None"
-                and filtering == "None"
-            ):
-                solver_no_vis = N_Queens_Solver(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # MRV
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV"
-                and filtering == "None"
-            ):
-                solver_no_vis = N_Queens_Solver_MRV(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # LCV
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "LCV"
-                and filtering == "None"
-            ):
-                solver_no_vis = N_Queens_Solver_LCV(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # MRV + LCV
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV + LCV"
-                and filtering == "None"
-            ):
-                solver_no_vis = N_Queens_Solver_MRV_LCV(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "None"
-                and filtering == "Forward Checking"
-            ):
-                solver_no_vis = N_Queens_Solver_FC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "None"
-                and filtering == "Arc Consistency"
-            ):
-                solver_no_vis = N_Queens_Solver_AC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # MRV + Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV"
-                and filtering == "Forward Checking"
-            ):
-                solver_no_vis = N_Queens_Solver_MRV_FC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # LCV + Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "LCV"
-                and filtering == "Forward Checking"
-            ):
-                solver_no_vis = N_Queens_Solver_LCV_FC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # MRV + LCV + Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV + LCV"
-                and filtering == "Forward Checking"
-            ):
-                solver_no_vis = N_Queens_Solver_MRV_LCV_FC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # MRV + Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV"
-                and filtering == "Arc Consistency"
-            ):
-                solver_no_vis = N_Queens_Solver_MRV_AC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # LCV + Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "LCV"
-                and filtering == "Arc Consistency"
-            ):
-                solver_no_vis = N_Queens_Solver_LCV_AC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-            # MRV + LCV + Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV + LCV"
-                and filtering == "Arc Consistency"
-            ):
-                solver_no_vis = N_Queens_Solver_MRV_LCV_AC(
-                    img_output_area,
-                    progress_bar=None,
-                    progress_label=None,
-                    vis=False,
-                    num_img=0,
-                    size=n,
-                )
-
-            # Run the N-Queens Sovler with no visualization first
-            solver_no_vis.solve()
-            print("        Solution Found:")
-
-            # Output solution display
-            if solver_no_vis.positions:
-                # Print four solution coordinates on each line
-                for i, position in enumerate(solver_no_vis.positions):
-                    end_char = "\n" if (i + 1) % 4 == 0 else " "
-                    if i % 4 == 0:
-                        print("       ", end=" ")
-                    print(position, end=end_char)
-
-                # Print extra new lines
-                if len(solver_no_vis.positions) % 4 != 0:
-                    print()
-                print()
-
-                # Print solution metrics
-                print(f"        Total Steps: {solver_no_vis.step_number}")
-                print(
-                    f"        Total Queen Placements: "
-                    f"{solver_no_vis.queen_placement}"
-                )
-                print(
-                    f"        Total Backtracking Steps: "
-                    f"{solver_no_vis.backtracking}"
-                )
-            else:
-                print("        No solution exists.")
-
-        # Display for right output area
-        with right_output_area:
-            clear_output(wait=True)  # Clear the output area before display
-
-            print("Generating Visualization...")
-
-            # Threshold for saving last max_img step images for visualization
-            max_img = (
-                10 if solver_no_vis.step_number > 10 else solver_no_vis.step_number
-            )
-
-            # Progress bar for tracking visualization generation
-            progress_bar = widgets.IntProgress(
-                value=0,
-                min=0,
-                max=max_img,
-                description="Progress:",
-                layout=widgets.Layout(width="200px"),
-            )
-
-            # Progress label for status of visualization generation
-            progress_label = widgets.Label("0% Complete")
-
-            # Combine progress bar and label horizontally in list order
-            progress_box = widgets.HBox(
-                [progress_bar, progress_label],
-                layout=widgets.Layout(margin="0 0 0 -20px"),
-            )
-
-            # Display progress bar
-            display(progress_box)
-
-            # Extract user input
-            n = size.value  # User input for N
-            algorithm = algorithm_opt.value  # User input for algorithm
-            ordering = ordering_opt.value  # User input for ordering
-            filtering = filtering_opt.value  # User input for filtering
-
-            # Initialize N-Queens Solver based on user input (w/ visualization)
-            # Baseline
-            if (
-                algorithm == "Backtracking"
-                and ordering == "None"
-                and filtering == "None"
-            ):
-                solver_vis = N_Queens_Solver(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # MRV
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV"
-                and filtering == "None"
-            ):
-                solver_vis = N_Queens_Solver_MRV(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # LCV
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "LCV"
-                and filtering == "None"
-            ):
-                solver_vis = N_Queens_Solver_LCV(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # MRV + LCV
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV + LCV"
-                and filtering == "None"
-            ):
-                solver_vis = N_Queens_Solver_MRV_LCV(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "None"
-                and filtering == "Forward Checking"
-            ):
-                solver_vis = N_Queens_Solver_FC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "None"
-                and filtering == "Arc Consistency"
-            ):
-                solver_vis = N_Queens_Solver_AC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # MRV + Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV"
-                and filtering == "Forward Checking"
-            ):
-                solver_vis = N_Queens_Solver_MRV_FC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # LCV + Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "LCV"
-                and filtering == "Forward Checking"
-            ):
-                solver_vis = N_Queens_Solver_LCV_FC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # MRV + LCV + Forward Checking
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV + LCV"
-                and filtering == "Forward Checking"
-            ):
-                solver_vis = N_Queens_Solver_MRV_LCV_FC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # MRV + Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV"
-                and filtering == "Arc Consistency"
-            ):
-                solver_vis = N_Queens_Solver_MRV_AC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # LCV + Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "LCV"
-                and filtering == "Arc Consistency"
-            ):
-                solver_vis = N_Queens_Solver_LCV_AC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-            # MRV + LCV + Arc Consistency
-            elif (
-                algorithm == "Backtracking"
-                and ordering == "MRV + LCV"
-                and filtering == "Arc Consistency"
-            ):
-                solver_vis = N_Queens_Solver_MRV_LCV_AC(
-                    img_output_area,
-                    progress_bar,
-                    progress_label,
-                    vis=True,
-                    num_img=solver_no_vis.step_number,
-                    size=n,
-                )
-
-            # Run the N-Queens Solver with visualization
-            solver_vis.solve()
-
-            # User control for visualization tool
-            # Slider for updating image steps
-            slider = widgets.IntSlider(
-                min=0,
-                max=max_img,
-                step=1,
-                value=0,
-                layout=widgets.Layout(width="180px"),
-            )
-
-            # Play button for automatically displaying image steps in sequence
-            play = widgets.Play(min=0, max=max_img, step=1, interval=500)
-
-            # Link the value for play button and slider
-            widgets.jslink((play, "value"), (slider, "value"))
-
-            # Previous and next button for updating image steps by one
-            prev_button = widgets.Button(description="Previous")
-            next_button = widgets.Button(description="Next")
-
-            # Helper Function for visualization tool
-            # Display the updated image step based on user button control
-            def update_image(change):
-                solver_vis.display_figure(change["new"])
-
-            # Define function to update play value when prev_button is clicked
-            def click_prev_button(b):
-                if play.value > 0:
-                    play.value -= 1
-
-            # Define function to update play value when next_button is clicked
-            def click_next_button(b):
-                if play.value < play.max:
-                    play.value += 1
-
-            # Link buttons to trigger function events when clicked
-            prev_button.on_click(click_prev_button)
-            next_button.on_click(click_next_button)
-
-            # Combine previous and next button horizontally for display
-            buttons_box = widgets.HBox(
-                [prev_button, next_button], layout=widgets.Layout(margin="0 0 0 50px")
-            )
-
-            # Observe play's value as it is changed and update image step
-            play.observe(update_image, names="value")
-
-            # Wrap play into horizontal widget box with slider
-            play_box = widgets.HBox(
-                [play, slider], layout=widgets.Layout(margin="10px 0 0 50px")
-            )
-
-            # Combine play, prev, next button and img output vertically
-            right_box = widgets.VBox(
-                [buttons_box, play_box, img_output_area],
-                layout=widgets.Layout(overflow="hidden", margin="20px 0 0 -20px"),
-            )
-
-            # Display for right output area
-            display(right_box)
-
-            # Initialize first image step for display
-            solver_vis.display_figure(0)
-
-    # Link solve button to trigger function events (run solver) when clicked
-    solve_button.on_click(click_solve_button)
-
-    # Combine both left and right output area horizontally and display
-    layout_box = widgets.VBox([left_box, right_box])
-    display(layout_box)
+    def start_ai_solver(self):
+        self.solve()
+        self.steps.value = f"Total Steps: {self.step_number}"
+        self.placements.value = f"Total Queen Placements: {self.queen_placement}"
+        self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+        if len(self.positions) == self.n:
+            self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
+        else:
+            self.solution.value = ""
