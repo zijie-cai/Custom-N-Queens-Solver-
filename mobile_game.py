@@ -118,14 +118,14 @@ class N_Queens_Game:
         self.reset.on_click(self.new_reset)
 
         self.hint_check = widgets.Checkbox(value=False, indent=False)
-        hint_label = widgets.Label("Hint", layout=Layout(margin="0px 0 0 -285px"))
+        hint_label = widgets.Label("Hint", layout=Layout(margin="0px 0 0 -280px"))
         self.hint_widget = HBox(
             [self.hint_check, hint_label],
             layout=Layout(width="100%", margin="2.5px 0 0 20px", overflow="hidden"),
         )
 
         self.ai_check = widgets.Checkbox(value=False, indent=False)
-        ai_label = widgets.Label("AI", layout=Layout(margin="0px 0 0 -285px"))
+        ai_label = widgets.Label("AI", layout=Layout(margin="0px 0 0 -280px"))
         self.ai_widget = HBox(
             [self.ai_check, ai_label],
             layout=Layout(width="100%", margin="2.5px 0 0 -75px", overflow="hidden"),
@@ -154,11 +154,12 @@ class N_Queens_Game:
 
         # Combine all above widgets vertically for user control game panel
         user_control = VBox(
-            [self.size, button_row, stats_box], layout=Layout(margin="0 0 0 55px")
+            [self.size, button_row, stats_box],
+            layout=Layout(margin="0 0 0 55px", overflow="hidden"),
         )
 
         # Store title into a box for shifting position
-        title = VBox([self.title], layout=Layout(margin="47.5px 0 5px 75px"))
+        title = VBox([self.title], layout=Layout(margin="35px 0 5px 75px"))
 
         # Combine board game fig and user control game panel horizontally
         with self.output:
