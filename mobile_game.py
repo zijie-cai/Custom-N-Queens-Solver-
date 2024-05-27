@@ -4,6 +4,8 @@ import numpy as np
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from ipywidgets import widgets, Button, HBox, VBox, Layout, Output
 from IPython.display import clear_output, display
+import time
+import asyncio
 
 """
 This class sets up a N-Queens Game interface. 
@@ -163,7 +165,6 @@ class N_Queens_Game:
 
         # Combine board game fig and user control game panel horizontally
         with self.output:
-            clear_output(wait=True)  # Clear the previous output
             display(
                 VBox(
                     [
@@ -439,6 +440,14 @@ class N_Queens_Game:
                 self.used_rows.add(mrv_row)
                 self.step_number += 1
                 self.queen_placement += 1
+                self.steps.value = f"Total Steps: {self.step_number}"
+                self.placements.value = (
+                    f"Total Queen Placements: {self.queen_placement}"
+                )
+                self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+                self.visualize_board()
+                self.fig.canvas.draw()
+                time.sleep(0.25)
                 if self.solve_n_queens_util():
                     return True
                 self.board[mrv_row][col] = 0
@@ -447,6 +456,14 @@ class N_Queens_Game:
                 self.used_rows.remove(mrv_row)
                 self.step_number += 1
                 self.backtracking += 1
+                self.steps.value = f"Total Steps: {self.step_number}"
+                self.placements.value = (
+                    f"Total Queen Placements: {self.queen_placement}"
+                )
+                self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+                self.visualize_board()
+                self.fig.canvas.draw()
+                time.sleep(0.25)
         return False
 
     def solve(self):
