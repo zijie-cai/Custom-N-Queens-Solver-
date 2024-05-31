@@ -258,12 +258,31 @@ class N_Queens_Game:
         self.update_threats_matrix()
         self.used_rows = set(r for (r, c) in self.positions)
 
-        while not await self.solve_n_queens_util() and self.ai:
+        if self.start:
+            self.start = False
             self.positions.clear()
             self.used_rows.clear()
             self.board = [[0] * self.n for _ in range(self.n)]
             self.threats = [[0] * self.n for _ in range(self.n)]
-            await self.solve_n_queens_util()
+            self.visualize_board()
+            self.fig.canvas.draw()
+
+        while not await self.solve_n_queens_util() and self.ai:
+            row, col = self.find_queen_to_remove()
+
+            # remove the queen that opens up most safe spots
+            self.board[row][col] = 0
+            self.backtrack_threats(self.threats, row, col)
+            self.positions.remove((row, col))
+            self.used_rows.remove(row)
+            self.step_number += 1
+            self.backtracking += 1
+            self.steps.value = f"Total Steps: {self.step_number}"
+            self.placements.value = f"Total Queen Placements: {self.queen_placement}"
+            self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+            self.visualize_board()
+            self.fig.canvas.draw()
+            await asyncio.sleep(0.25)
 
         if self.ai and len(self.positions) == self.n:
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
@@ -404,6 +423,28 @@ class N_Queens_Game:
                 safe = True
                 break
         return safe
+
+    def find_queen_to_remove(self):
+        max_safe = -1
+        row_r = -1
+        col_r = -1
+        for row, col in self.positions:
+            safe_spots = self.count_safe_spots_for_board_remove(row, col)
+            if safe_spots > max_safe:
+                max_safe = safe_spots
+                row_r = row
+                col_r = col
+        return row_r, col_r
+
+    def count_safe_spots_for_board_remove(self, row, col):
+        board_copy = [r[:] for r in self.board]
+        board_copy[row][col] = 0
+        safe_spots = 0
+        for r in range(self.n):
+            for c in range(self.n):
+                if self.is_safe(board_copy, r, c):
+                    safe_spots += 1
+        return safe_spots
 
     def count_safe_spots_for_board(self, row, col):
         board_copy = [r[:] for r in self.board]
