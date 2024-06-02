@@ -3,8 +3,8 @@ import numpy as np
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from ipywidgets import widgets, Button, HBox, VBox, Layout, Output
 from IPython.display import clear_output, display
-import time
 import asyncio
+import random
 
 
 class N_Queens_Game:
@@ -217,6 +217,22 @@ class N_Queens_Game:
                 threats += 1
         return threats
 
+    def is_board_safe(self):
+        """
+        Check if the entire board is safe (no queens threaten each other).
+        """
+
+        for row1, col1 in self.positions:
+            for row2, col2 in self.positions:
+                if (row1, col1) != (row2, col2):
+                    if (
+                        row1 == row2
+                        or col1 == col2
+                        or abs(row1 - row2) == abs(col1 - col2)
+                    ):
+                        return False
+        return True
+
     def onclick(self, event):
         if event.inaxes and event.xdata is not None and event.ydata is not None:
             row, col = int(event.ydata), int(event.xdata)
@@ -234,6 +250,9 @@ class N_Queens_Game:
             self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
             self.visualize_board()
 
+            if self.start and self.is_board_safe():
+                self.start = False
+
             if len(self.positions) == self.n:
                 self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
             else:
@@ -241,6 +260,9 @@ class N_Queens_Game:
                 self.solution.value = ""
 
     async def start_ai_solver(self):
+        await self.make_board_safe()
+        if self.start and self.is_board_safe():
+            self.start = False
         await self.solve()
         self.steps.value = f"Total Steps: {self.step_number}"
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
@@ -250,6 +272,19 @@ class N_Queens_Game:
         else:
             self.solution.value = ""
 
+    async def make_board_safe(self):
+        while not self.is_board_safe() and self.positions and self.ai:
+            row, col = random.choice(list(self.positions))
+            self.positions.remove((row, col))
+            self.update_threats_matrix()
+            self.step_number += 1
+            self.backtracking += 1
+            self.steps.value = f"Total Steps: {self.step_number}"
+            self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+            self.visualize_board()
+            self.fig.canvas.draw()
+            await asyncio.sleep(0.25)  # Use asyncio.sleep for non-blocking delay
+
     async def solve(self):
         self.board = [[0] * self.n for _ in range(self.n)]
         for r, c in self.positions:
@@ -258,27 +293,20 @@ class N_Queens_Game:
         self.update_threats_matrix()
         self.used_rows = set(r for (r, c) in self.positions)
 
-        if self.start:
-            self.start = False
-            self.positions.clear()
-            self.used_rows.clear()
-            self.board = [[0] * self.n for _ in range(self.n)]
-            self.threats = [[0] * self.n for _ in range(self.n)]
-            self.visualize_board()
-            self.fig.canvas.draw()
-
+        # Backtracking Solver
         while not await self.solve_n_queens_util() and self.ai:
+
             row, col = self.find_queen_to_remove()
 
-            # remove the queen that opens up most safe spots
-            self.board[row][col] = 0
-            self.backtrack_threats(self.threats, row, col)
+            # Remove the queen that opens up most safe spots
             self.positions.remove((row, col))
             self.used_rows.remove(row)
+            self.board[row][col] = 0
+            self.backtrack_threats(self.threats, row, col)
+
             self.step_number += 1
             self.backtracking += 1
             self.steps.value = f"Total Steps: {self.step_number}"
-            self.placements.value = f"Total Queen Placements: {self.queen_placement}"
             self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
             self.visualize_board()
             self.fig.canvas.draw()
