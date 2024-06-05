@@ -7,6 +7,7 @@ import asyncio
 import random
 from IPython.display import Audio
 import numpy as np
+from IPython.display import display, Javascript
 
 
 class N_Queens_Game:
@@ -242,7 +243,6 @@ class N_Queens_Game:
         data = np.sin(2 * np.pi * 220 * t)
         return Audio(data, rate=framerate, autoplay=True)
 
-    # Modify your click event to play a beep
     def onclick(self, event):
         if event.inaxes and event.xdata is not None and event.ydata is not None:
             row, col = int(event.ydata), int(event.xdata)
@@ -251,11 +251,19 @@ class N_Queens_Game:
                 self.queen_placement += 1
                 self.step_number += 1
                 self.beep()  # Play a beep sound when a queen is placed
+                # Trigger vibration
+                display(
+                    Javascript("navigator.vibrate(200);")
+                )  # Vibrate for 200 milliseconds
             elif (row, col) in self.positions:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
                 self.beep()  # Play a beep sound when a queen is removed
+                # Trigger vibration
+                display(
+                    Javascript("navigator.vibrate(200);")
+                )  # Vibrate for 200 milliseconds
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
