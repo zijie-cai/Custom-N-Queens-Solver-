@@ -5,7 +5,7 @@ from ipywidgets import widgets, Button, HBox, VBox, Layout, Output
 from IPython.display import clear_output, display
 import asyncio
 import random
-from plyer import vibrator
+import sys
 
 
 class N_Queens_Game:
@@ -59,8 +59,6 @@ class N_Queens_Game:
         self.n = 16
         self.hint = False
         self.ai = False
-
-        self.vibrator = vibrator
 
         self.steps = widgets.Label(
             value=f"Total Steps: {self.step_number}",
@@ -243,14 +241,28 @@ class N_Queens_Game:
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
-                if self.vibrator.exists():
-                    self.vibrator.vibrate(0.5)
+                print(sys.modules)
+                if "plyer" in sys.modules:
+                    try:
+                        from plyer import vibrator
+
+                        if vibrator.exists():
+                            vibrator.vibrate()
+                    except Exception as e:
+                        print(f"Vibration not supported on this platform: {e}")
+
             elif (row, col) in self.positions:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
-                if self.vibrator.exists():
-                    self.vibrator.vibrate(0.5)
+                if "plyer" in sys.modules:
+                    try:
+                        from plyer import vibrator
+
+                        if vibrator.exists():
+                            vibrator.vibrate()
+                    except Exception as e:
+                        print(f"Vibration not supported on this platform: {e}")
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
