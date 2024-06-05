@@ -5,7 +5,9 @@ from ipywidgets import widgets, Button, HBox, VBox, Layout, Output
 from IPython.display import clear_output, display
 import asyncio
 import random
-import sys
+from IPython.display import Audio
+
+sound_file = "./beep-10.mp3"
 
 
 class N_Queens_Game:
@@ -241,18 +243,12 @@ class N_Queens_Game:
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
-                try:
-                    from plyer import vibrator
-
-                    if vibrator.exists():
-                        vibrator.vibrate()
-                except Exception as e:
-                    print(f"Vibration not supported on this platform: {e}")
-
+                Audio(sound_file, autoplay=True)
             elif (row, col) in self.positions:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
+                Audio(sound_file, autoplay=True)
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
