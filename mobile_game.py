@@ -241,28 +241,18 @@ class N_Queens_Game:
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
-                print(sys.modules)
-                if "plyer" in sys.modules:
-                    try:
-                        from plyer import vibrator
+                try:
+                    from plyer import vibrator
 
-                        if vibrator.exists():
-                            vibrator.vibrate()
-                    except Exception as e:
-                        print(f"Vibration not supported on this platform: {e}")
+                    if vibrator.exists():
+                        vibrator.vibrate()
+                except Exception as e:
+                    print(f"Vibration not supported on this platform: {e}")
 
             elif (row, col) in self.positions:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
-                if "plyer" in sys.modules:
-                    try:
-                        from plyer import vibrator
-
-                        if vibrator.exists():
-                            vibrator.vibrate()
-                    except Exception as e:
-                        print(f"Vibration not supported on this platform: {e}")
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
