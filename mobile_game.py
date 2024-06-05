@@ -5,9 +5,7 @@ from ipywidgets import widgets, Button, HBox, VBox, Layout, Output
 from IPython.display import clear_output, display
 import asyncio
 import random
-from IPython.display import Audio
-import numpy as np
-from IPython.display import display, Javascript
+from plyer import vibrator
 
 
 class N_Queens_Game:
@@ -61,6 +59,8 @@ class N_Queens_Game:
         self.n = 16
         self.hint = False
         self.ai = False
+
+        self.vibrator = vibrator
 
         self.steps = widgets.Label(
             value=f"Total Steps: {self.step_number}",
@@ -236,13 +236,6 @@ class N_Queens_Game:
                         return False
         return True
 
-    # Function to generate a beep sound
-    def beep(self):
-        framerate = 4410
-        t = np.linspace(0, 0.5, int(0.5 * framerate))
-        data = np.sin(2 * np.pi * 220 * t)
-        return Audio(data, rate=framerate, autoplay=True)
-
     def onclick(self, event):
         if event.inaxes and event.xdata is not None and event.ydata is not None:
             row, col = int(event.ydata), int(event.xdata)
@@ -250,20 +243,14 @@ class N_Queens_Game:
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
-                self.beep()  # Play a beep sound when a queen is placed
-                # Trigger vibration
-                display(
-                    Javascript("navigator.vibrate(200);")
-                )  # Vibrate for 200 milliseconds
+                if self.vibrator.exists():
+                    self.vibrator.vibrate(0.5)
             elif (row, col) in self.positions:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
-                self.beep()  # Play a beep sound when a queen is removed
-                # Trigger vibration
-                display(
-                    Javascript("navigator.vibrate(200);")
-                )  # Vibrate for 200 milliseconds
+                if self.vibrator.exists():
+                    self.vibrator.vibrate(0.5)
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
