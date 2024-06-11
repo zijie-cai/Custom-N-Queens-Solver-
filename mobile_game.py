@@ -6,13 +6,13 @@ from IPython.display import clear_output, display
 import asyncio
 import random
 from IPython.display import Audio
-
-sound_file = "./beep-10.mp3"
+from IPython.display import display, HTML, Javascript
 
 
 class N_Queens_Game:
     def __init__(self):
         self.start = True
+
         self.positions = {
             (10, 2),
             (9, 2),
@@ -93,27 +93,69 @@ class N_Queens_Game:
             style={"font_size": "15px"},
             layout=widgets.Layout(width="250px", margin="20px 0 0 5px"),
         )
+
         self.output = Output()
+        self.init_audio()
         self.visualize_board()
 
+    def init_audio(self):
+        audio_html = """
+            <audio id="queen-audio-place" src="./button-16.mp3" preload="auto"></audio>
+            <audio id="queen-audio-back" src="./backtrack.mp3" preload="auto"></audio>
+            <audio id="queen-audio-unsafe" src="./error.mp3" preload="auto"></audio>
+            <audio id="queen-audio-new" src="./new.mp3" preload="auto"></audio>
+            <audio id="queen-audio-success" src="./success.mp3" preload="auto"></audio>
+            """
+        with self.output:
+            display(HTML(audio_html))
+
+    def play_sound(self, audio_id):
+
+        js = f"""
+            <script>
+            document.getElementById('{audio_id}').play();
+            </script>
+            """
+
+        display(HTML(js))
+
     def setup(self):
-        self.reset = Button(description="New", layout=Layout(width="150px"))
+        self.reset = Button(description="New", layout=Layout(width="120px"))
         self.reset.on_click(self.new_reset)
 
         self.hint_check = widgets.Checkbox(value=False, indent=False)
-        hint_label = widgets.Label("Hint", layout=Layout(margin="0px 0 0 -280px"))
+        hint_label = widgets.Label("Hint", layout=Layout(margin="0px 0 0 -281px"))
         self.hint_widget = HBox(
             [self.hint_check, hint_label],
-            layout=Layout(width="100%", margin="2.5px 0 0 20px", overflow="hidden"),
+            layout=Layout(width="100%", margin="2.5px 0 0 24px", overflow="hidden"),
         )
 
         self.ai_check = widgets.Checkbox(value=False, indent=False)
-        ai_label = widgets.Label("AI", layout=Layout(margin="0px 0 0 -280px"))
-        self.ai_widget = HBox(
-            [self.ai_check, ai_label],
-            layout=Layout(width="100%", margin="2.5px 0 0 -75px", overflow="hidden"),
+        self.ai_label = widgets.Button(
+            description="AI",
+            layout=widgets.Layout(width="auto", margin="-0.5px 0 0 -290px"),
+            style={
+                "button_color": "transparent",
+                "font_size": "12.5px",
+            },
         )
 
+        css = """
+        <style>
+        .button-style { 
+            text-decoration: underline;
+        }
+        </style>
+        """
+        with self.output:
+            display(HTML(css))
+        self.ai_label.add_class("button-style")
+        self.ai_widget = HBox(
+            [self.ai_check, self.ai_label],
+            layout=Layout(width="100%", margin="2px 0 0 -68px", overflow="hidden"),
+        )
+
+        self.ai_label.on_click(self.on_button_click)
         self.hint_check.observe(self.observe_hint, names="value")
         self.ai_check.observe(self.observe_ai, names="value")
 
@@ -148,10 +190,26 @@ class N_Queens_Game:
     def observe_ai(self, change):
         self.ai = change["new"]
         if self.ai:
+            if self.start:
+                self.start = False
+                self.n = self.size.value
+                self.positions.clear()
+                self.step_number = 0
+                self.backtracking = 0
+                self.queen_placement = 0
+                self.solution.value = ""
+                self.steps.value = f"Total Steps: {self.step_number}"
+                self.placements.value = (
+                    f"Total Queen Placements: {self.queen_placement}"
+                )
+                self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+                self.visualize_board()
             asyncio.create_task(self.start_ai_solver())
 
     def new_reset(self, change=None):
         self.start = False
+
+        self.play_sound("queen-audio-new")
         self.n = self.size.value
         self.positions.clear()
         self.step_number = 0
@@ -243,12 +301,25 @@ class N_Queens_Game:
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
-                Audio(sound_file, autoplay=True)
-            elif (row, col) in self.positions:
+
+                self.play_sound("queen-audio-place")
+            elif (row, col) in self.positions and not self.start:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
-                Audio(sound_file, autoplay=True)
+
+                self.play_sound("queen-audio-back")
+            elif self.start:
+                self.start = False
+                self.positions.clear()
+                self.positions.add((row, col))
+                self.queen_placement += 1
+                self.step_number += 1
+
+                self.play_sound("queen-audio-place")
+            else:
+
+                self.play_sound("queen-audio-unsafe")
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
@@ -259,36 +330,28 @@ class N_Queens_Game:
                 self.start = False
 
             if len(self.positions) == self.n:
+
+                self.play_sound("queen-audio-success")
                 self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
             else:
                 self.ai_check.value = False
                 self.solution.value = ""
 
     async def start_ai_solver(self):
-        await self.make_board_safe()
-        if self.start and self.is_board_safe():
-            self.start = False
         await self.solve()
         self.steps.value = f"Total Steps: {self.step_number}"
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
         if len(self.positions) == self.n:
+            self.play_sound("queen-audio-success")
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         else:
             self.solution.value = ""
 
-    async def make_board_safe(self):
-        while not self.is_board_safe() and self.positions and self.ai:
-            row, col = random.choice(list(self.positions))
-            self.positions.remove((row, col))
-            self.update_threats_matrix()
-            self.step_number += 1
-            self.backtracking += 1
-            self.steps.value = f"Total Steps: {self.step_number}"
-            self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
-            self.visualize_board()
-            self.fig.canvas.draw()
-            await asyncio.sleep(0.25)  # Use asyncio.sleep for non-blocking delay
+    def on_button_click(self, b):
+        with self.output:
+            clear_output(wait=True)
+            print("Displaying new configuration setup...")
 
     async def solve(self):
         self.board = [[0] * self.n for _ in range(self.n)]
@@ -315,9 +378,13 @@ class N_Queens_Game:
             self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
             self.visualize_board()
             self.fig.canvas.draw()
+
+            self.play_sound("queen-audio-back")
             await asyncio.sleep(0.25)
 
         if self.ai and len(self.positions) == self.n:
+
+            self.play_sound("queen-audio-success")
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         self.visualize_board()
 
@@ -342,6 +409,7 @@ class N_Queens_Game:
                         self.update_threats(self.threats, mrv_row, col)
                         self.positions.add((mrv_row, col))
                         self.used_rows.add(mrv_row)
+
                         self.step_number += 1
                         self.queen_placement += 1
                         self.steps.value = f"Total Steps: {self.step_number}"
@@ -353,6 +421,8 @@ class N_Queens_Game:
                         )
                         self.visualize_board()
                         self.fig.canvas.draw()
+
+                        self.play_sound("queen-audio-place")
                         await asyncio.sleep(0.25)
                     if await self.solve_n_queens_util():
                         return True
@@ -361,6 +431,7 @@ class N_Queens_Game:
                         self.backtrack_threats(self.threats, mrv_row, col)
                         self.positions.remove((mrv_row, col))
                         self.used_rows.remove(mrv_row)
+
                         self.step_number += 1
                         self.backtracking += 1
                         self.steps.value = f"Total Steps: {self.step_number}"
@@ -372,6 +443,8 @@ class N_Queens_Game:
                         )
                         self.visualize_board()
                         self.fig.canvas.draw()
+
+                        self.play_sound("queen-audio-back")
                         await asyncio.sleep(0.25)
         return False
 
