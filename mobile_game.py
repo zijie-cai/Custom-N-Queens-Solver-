@@ -458,6 +458,7 @@ class N_Queens_Game:
             return 0
 
     async def solve(self):
+        self.start = False
         self.board = [[0] * self.n for _ in range(self.n)]
         for r, c in self.positions:
             self.board[r][c] = 1
