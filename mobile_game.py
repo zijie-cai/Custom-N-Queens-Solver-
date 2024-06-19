@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
-from ipywidgets import widgets, Button, HBox, VBox, Layout, Output
+from ipywidgets import widgets, Button, HBox, VBox, Layout, Output, Dropdown
 from IPython.display import clear_output, display
 import asyncio
 import random
@@ -95,29 +95,8 @@ class N_Queens_Game:
         )
 
         self.output = Output()
-        self.init_audio()
+
         self.visualize_board()
-
-    def init_audio(self):
-        audio_html = """
-            <audio id="queen-audio-place" src="./button-16.mp3" preload="auto"></audio>
-            <audio id="queen-audio-back" src="./backtrack.mp3" preload="auto"></audio>
-            <audio id="queen-audio-unsafe" src="./error.mp3" preload="auto"></audio>
-            <audio id="queen-audio-new" src="./new.mp3" preload="auto"></audio>
-            <audio id="queen-audio-success" src="./success.mp3" preload="auto"></audio>
-            """
-        with self.output:
-            display(HTML(audio_html))
-
-    def play_sound(self, audio_id):
-
-        js = f"""
-            <script>
-            document.getElementById('{audio_id}').play();
-            </script>
-            """
-
-        display(HTML(js))
 
     def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
@@ -155,7 +134,7 @@ class N_Queens_Game:
             layout=Layout(width="100%", margin="2px 0 0 -68px", overflow="hidden"),
         )
 
-        self.ai_label.on_click(self.on_button_click)
+        self.ai_label.on_click(self.on_ai_click)
         self.hint_check.observe(self.observe_hint, names="value")
         self.ai_check.observe(self.observe_ai, names="value")
 
@@ -167,16 +146,18 @@ class N_Queens_Game:
             [self.steps, self.placements, self.backtracks, self.solution],
             layout=Layout(margin="10px"),
         )
-        user_control = VBox(
+        self.user_control = VBox(
             [self.size, button_row, stats_box],
             layout=Layout(margin="0 0 0 55px", overflow="hidden"),
         )
-        title = VBox([self.title], layout=Layout(margin="35px 0 5px 75px"))
+        self.title = VBox([self.title], layout=Layout(margin="35px 0 5px 75px"))
+
+        self.create_solver_config_ui()
 
         with self.output:
             display(
                 VBox(
-                    [title, self.fig.canvas, user_control],
+                    [self.title, self.fig.canvas, self.user_control],
                     layout=Layout(margin="-47.5px 0px 0 0px"),
                 )
             )
@@ -208,8 +189,6 @@ class N_Queens_Game:
 
     def new_reset(self, change=None):
         self.start = False
-
-        self.play_sound("queen-audio-new")
         self.n = self.size.value
         self.positions.clear()
         self.step_number = 0
@@ -302,24 +281,17 @@ class N_Queens_Game:
                 self.queen_placement += 1
                 self.step_number += 1
 
-                self.play_sound("queen-audio-place")
             elif (row, col) in self.positions and not self.start:
                 self.positions.remove((row, col))
                 self.backtracking += 1
                 self.step_number += 1
 
-                self.play_sound("queen-audio-back")
             elif self.start:
                 self.start = False
                 self.positions.clear()
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
-
-                self.play_sound("queen-audio-place")
-            else:
-
-                self.play_sound("queen-audio-unsafe")
 
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
@@ -331,7 +303,6 @@ class N_Queens_Game:
 
             if len(self.positions) == self.n:
 
-                self.play_sound("queen-audio-success")
                 self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
             else:
                 self.ai_check.value = False
@@ -339,19 +310,148 @@ class N_Queens_Game:
 
     async def start_ai_solver(self):
         await self.solve()
+
         self.steps.value = f"Total Steps: {self.step_number}"
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
         if len(self.positions) == self.n:
-            self.play_sound("queen-audio-success")
+
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         else:
             self.solution.value = ""
 
+    def create_solver_config_ui(self):
+        # Title for the configuration UI
+        self.config_title = widgets.Label(
+            value="AI CSP Solver Configuration",
+            style={"font_weight": "bold", "font_size": "16px"},
+            layout=widgets.Layout(
+                margin="10px 0 10px 57.5px"
+            ),  # Adjust top and bottom margin
+        )
+
+        self.algorithm_dropdown = Dropdown(
+            options=["Backtracking"],
+            value="Backtracking",
+            description="Algorithm:",
+            disabled=False,
+        )
+
+        self.ordering_dropdown = Dropdown(
+            options=["None", "MRV", "LCV", "MRV + LCV"],
+            value="MRV + LCV",
+            description="Ordering:",
+            disabled=False,
+        )
+
+        self.filtering_dropdown = Dropdown(
+            options=["None", "Forward Checking", "Arc Consistency"],
+            value="Arc Consistency",
+            description="Filtering:",
+            disabled=False,
+        )
+
+        self.speed_dropdown = Dropdown(
+            options=["1x", "2x", "4x", "8x", "∞"],
+            value="1x",
+            description="Speed:",
+            disabled=False,
+        )
+
+        # Button for resetting the solver configuration
+        self.reset_button = Button(
+            description="Reset",
+            layout=widgets.Layout(width="135px", margin="0px 0 0px 25px"),
+        )
+        self.reset_button.on_click(self.on_reset_click)
+
+        # Button for saving the solver configuration
+        self.save_button = Button(
+            description="Save",
+            layout=widgets.Layout(width="135px", margin="0px 0 0px 7.5px"),
+        )
+        self.save_button.on_click(self.on_save_click)
+
+        # Horizontal box to hold the buttons
+        self.buttons_box = HBox(
+            [self.reset_button, self.save_button],
+            layout=widgets.Layout(margin="15px 0 0 0"),
+        )
+
+        # Creating a VBox to display the configuration UI along with buttons
+        self.config_ui = VBox(
+            [
+                self.config_title,
+                self.algorithm_dropdown,
+                self.ordering_dropdown,
+                self.filtering_dropdown,
+                self.speed_dropdown,
+                self.buttons_box,
+            ]
+        )
+        return self.config_ui
+
+    def on_reset_click(self, b):
+        # Resetting dropdowns to their initial values
+        self.speed_dropdown.value = self.speed_dropdown_reset
+        self.algorithm_dropdown.value = self.algorithm_dropdown_reset
+        self.ordering_dropdown.value = self.ordering_dropdown_reset
+        self.filtering_dropdown.value = self.filtering_dropdown_reset
+
+    def on_save_click(self, b):
+
+        # Return to the main display
+        self.on_button_click(
+            b
+        )  # This simulates clicking the AI button to return to main display
+
     def on_button_click(self, b):
+        # If saving, return to main display, else show configuration
+        if b.description == "Save":
+
+            css = """
+            <style>
+            .button-style { 
+                text-decoration: underline;
+            }
+            </style>
+            """
+            with self.output:
+                clear_output(wait=True)
+                display(HTML(css))
+                display(
+                    VBox(
+                        [self.title, self.fig.canvas, self.user_control],
+                        layout=Layout(margin="-47.5px 0px 0 0px"),
+                    )
+                )
+        else:
+            with self.output:
+                clear_output(wait=True)
+                display(self.config_ui)
+                print("Solver configuration setup displayed.")
+
+    def on_ai_click(self, b):
         with self.output:
+            self.ai_check.value = False
+            self.algorithm_dropdown_reset = self.algorithm_dropdown.value
+            self.ordering_dropdown_reset = self.ordering_dropdown.value
+            self.filtering_dropdown_reset = self.filtering_dropdown.value
+            self.speed_dropdown_reset = self.speed_dropdown.value
             clear_output(wait=True)
-            print("Displaying new configuration setup...")
+            display(self.config_ui)
+
+    def speed_check(self):
+        if self.speed_dropdown.value == "1x":
+            return 1
+        elif self.speed_dropdown.value == "2x":
+            return 2
+        elif self.speed_dropdown.value == "4x":
+            return 4
+        elif self.speed_dropdown.value == "8x":
+            return 8
+        else:
+            return 0
 
     async def solve(self):
         self.board = [[0] * self.n for _ in range(self.n)]
@@ -361,8 +461,41 @@ class N_Queens_Game:
         self.update_threats_matrix()
         self.used_rows = set(r for (r, c) in self.positions)
 
-        # Backtracking Solver
-        while not await self.solve_n_queens_util() and self.ai:
+        algorithm = self.algorithm_dropdown.value
+        ordering = self.ordering_dropdown.value
+        filtering = self.filtering_dropdown.value
+
+        # Call the appropriate solver method based on the configuration
+        if algorithm == "Backtracking":
+            if ordering == "MRV + LCV" and filtering == "Arc Consistency":
+                solver = await self.solve_n_queens_util_mrv_lcv_ac()
+            if ordering == "MRV + LCV" and filtering == "Forward Checking":
+                solver = await self.solve_n_queens_util_mrv_lcv_fc()
+            if ordering == "MRV + LCV" and filtering == "None":
+                solver = await self.solve_n_queens_util_mrv_lcv()
+
+            if ordering == "MRV" and filtering == "Arc Consistency":
+                solver = await self.solve_n_queens_util_mrv_ac()
+            if ordering == "MRV" and filtering == "Forward Checking":
+                solver = await self.solve_n_queens_util_mrv_fc()
+            if ordering == "MRV" and filtering == "None":
+                solver = await self.solve_n_queens_util_mrv()
+
+            if ordering == "LCV" and filtering == "Forward Checking":
+                solver = await self.solve_n_queens_util_lcv_fc()
+            if ordering == "LCV" and filtering == "Arc Consistency":
+                solver = await self.solve_n_queens_util_lcv_ac()
+            if ordering == "LCV" and filtering == "None":
+                solver = await self.solve_n_queens_util_lcv()
+
+            if ordering == "None" and filtering == "Arc Consistency":
+                solver = await self.solve_n_queens_util_ac()
+            if ordering == "None" and filtering == "Forward Checking":
+                solver = await self.solve_n_queens_util_fc()
+            if ordering == "None" and filtering == "None":
+                solver = await self.solve_n_queens_util_backtracking()
+
+        while not solver and self.ai:
 
             row, col = self.find_queen_to_remove()
 
@@ -374,21 +507,858 @@ class N_Queens_Game:
 
             self.step_number += 1
             self.backtracking += 1
-            self.steps.value = f"Total Steps: {self.step_number}"
-            self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
-            self.visualize_board()
-            self.fig.canvas.draw()
 
-            self.play_sound("queen-audio-back")
-            await asyncio.sleep(0.25)
+            time = self.speed_check()
+            if time != 0:
+                self.steps.value = f"Total Steps: {self.step_number}"
+                self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+                self.visualize_board()
+                self.fig.canvas.draw()
+                await asyncio.sleep(1 / time)
+
+            if algorithm == "Backtracking":
+                if ordering == "MRV + LCV" and filtering == "Arc Consistency":
+                    solver = await self.solve_n_queens_util_mrv_lcv_ac()
+                if ordering == "MRV + LCV" and filtering == "Forward Checking":
+                    solver = await self.solve_n_queens_util_mrv_lcv_fc()
+                if ordering == "MRV + LCV" and filtering == "None":
+                    solver = await self.solve_n_queens_util_mrv_lcv()
+
+                if ordering == "MRV" and filtering == "Arc Consistency":
+                    solver = await self.solve_n_queens_util_mrv_ac()
+                if ordering == "MRV" and filtering == "Forward Checking":
+                    solver = await self.solve_n_queens_util_mrv_fc()
+                if ordering == "MRV" and filtering == "None":
+                    solver = await self.solve_n_queens_util_mrv()
+
+                if ordering == "LCV" and filtering == "Arc Consistency":
+                    solver = await self.solve_n_queens_util_lcv_ac()
+                if ordering == "LCV" and filtering == "Forward Checking":
+                    solver = await self.solve_n_queens_util_lcv_fc()
+                if ordering == "LCV" and filtering == "None":
+                    solver = await self.solve_n_queens_util_lcv()
+
+                if ordering == "None" and filtering == "Arc Consistency":
+                    solver = await self.solve_n_queens_util_ac()
+                if ordering == "None" and filtering == "Forward Checking":
+                    solver = await self.solve_n_queens_util_fc()
+                if ordering == "None" and filtering == "None":
+                    solver = await self.solve_n_queens_util_backtracking()
 
         if self.ai and len(self.positions) == self.n:
 
-            self.play_sound("queen-audio-success")
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         self.visualize_board()
+        self.fig.canvas.draw()
 
-    async def solve_n_queens_util(self):
+    ### Backtracking
+    async def solve_n_queens_util_backtracking(self, row=0):
+        if self.ai:
+            if row >= self.n:
+                return True
+
+            if row in self.used_rows:
+                if await self.solve_n_queens_util_fc(row + 1):
+                    return True
+            else:
+                for col in range(self.n):
+                    if self.is_safe(self.board, row, col):
+                        if self.ai:
+                            # Queen Placement
+                            self.board[row][col] = 1  # Place the queen
+                            self.update_threats(
+                                self.threats, row, col
+                            )  # Update threats
+                            self.positions.add((row, col))  # Add Queen position
+                            self.used_rows.add(row)  # Add row from used rows
+                            self.step_number += 1  # Update total step counter
+                            self.queen_placement += 1  # Update Queen placement counter
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+
+                        if await self.solve_n_queens_util_backtracking(row + 1):
+                            return True
+
+                        if self.ai:
+                            # Backtracking
+                            self.board[row][col] = 0  # Remove the Queen
+                            # Backtrack threats
+                            self.backtrack_threats(self.threats, row, col)
+                            self.positions.remove((row, col))  # Remove Queen position
+                            self.used_rows.remove(row)  # Remove row from used rows
+                            self.step_number += 1  # Update total step counter
+                            self.backtracking += 1  # Update backtracking step counter
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+        return False
+
+    ### FC
+    async def solve_n_queens_util_fc(self, row=0):
+        if self.ai:
+            if row >= self.n:
+                return True
+
+            if row in self.used_rows:
+                if await self.solve_n_queens_util_fc(row + 1):
+                    return True
+            else:
+                if self.forward_checking():
+
+                    row_threats = self.threats[row]
+
+                    safe_cols = [
+                        index
+                        for index, threats in enumerate(row_threats)
+                        if threats == 0
+                    ]
+
+                    for col in safe_cols:
+
+                        if self.ai:
+                            # Queen Placement
+                            self.board[row][col] = 1  # Place the queen
+                            self.update_threats(
+                                self.threats, row, col
+                            )  # Update threats
+                            self.positions.add((row, col))  # Add Queen position
+                            self.used_rows.add(row)  # Add row from used rows
+                            self.step_number += 1  # Update total step counter
+                            self.queen_placement += 1  # Update Queen placement counter
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+
+                        if await self.solve_n_queens_util_fc(row + 1):
+                            return True
+
+                        if self.ai:
+                            # Backtracking
+                            self.board[row][col] = 0  # Remove the Queen
+                            # Backtrack threats
+                            self.backtrack_threats(self.threats, row, col)
+                            self.positions.remove((row, col))  # Remove Queen position
+                            self.used_rows.remove(row)  # Remove row from used rows
+                            self.step_number += 1  # Update total step counter
+                            self.backtracking += 1  # Update backtracking step counter
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+                else:
+                    return False
+        return False
+
+    ### AC
+    async def solve_n_queens_util_ac(self, row=0):
+        if self.ai:
+            if row >= self.n:
+                return True
+
+            if row in self.used_rows:
+                if await self.solve_n_queens_util_ac(row + 1):
+                    return True
+            else:
+
+                prune = self.arc_consistency(row)
+
+                row_threats = self.threats[row]
+
+                safe_cols = [
+                    index for index, threats in enumerate(row_threats) if threats == 0
+                ]
+
+                for col in safe_cols:
+                    if col not in prune:  # Check whether a column is pruned off
+
+                        if self.ai:
+                            # Queen Placement
+                            self.board[row][col] = 1  # Place the queen
+                            self.update_threats(
+                                self.threats, row, col
+                            )  # Update threats
+                            self.positions.add((row, col))  # Add Queen position
+                            self.used_rows.add(row)  # Add row from used rows
+                            self.step_number += 1  # Update total step counter
+                            self.queen_placement += 1  # Update Queen placement counter
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+
+                        if await self.solve_n_queens_util_ac(row + 1):
+                            return True
+
+                        if self.ai:
+                            # Backtracking
+                            self.board[row][col] = 0  # Remove the Queen
+                            # Backtrack threats
+                            self.backtrack_threats(self.threats, row, col)
+                            self.positions.remove((row, col))  # Remove Queen position
+                            self.used_rows.remove(row)  # Remove row from used rows
+                            self.step_number += 1  # Update total step counter
+                            self.backtracking += 1  # Update backtracking step counter
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+        return False
+
+    ### LCV
+    async def solve_n_queens_util_lcv(self, row=0):
+        if self.ai:
+            if row >= self.n:
+                return True
+
+            if row in self.used_rows:
+                if await self.solve_n_queens_util_lcv(row + 1):
+                    return True
+            else:
+
+                # Store a list of safe columns and number of remaining safe spots
+                col_lcv = []
+                for col in range(self.n):
+                    if self.is_safe(self.board, row, col):
+                        lcv = self.count_safe_spots_for_board(row, col)
+                        col_lcv.append((col, lcv))
+
+                # Sort the safe col in ascending order based on number of safe spots
+                col_lcv.sort(key=lambda x: x[1])
+
+                # Try Queen placement in each safe column (in LCV order) in this row
+                for col, _ in col_lcv:
+                    if self.ai:
+                        self.board[row][col] = 1
+                        self.update_threats(self.threats, row, col)
+                        self.positions.add((row, col))
+                        self.used_rows.add(row)
+
+                        self.step_number += 1
+                        self.queen_placement += 1
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+                    if await self.solve_n_queens_util_lcv(row + 1):
+                        return True
+
+                    if self.ai and (row in self.used_rows):
+
+                        self.board[row][col] = 0
+                        self.backtrack_threats(self.threats, row, col)
+                        self.positions.remove((row, col))
+                        self.used_rows.remove(row)
+
+                        self.step_number += 1
+                        self.backtracking += 1
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+        return False
+
+    ### MRV
+    async def solve_n_queens_util_mrv(self):
+        if self.ai:
+
+            # Base Case: all rows are occupied
+            if len(self.used_rows) == self.n:
+                return True
+
+            # Find the target row with minimum remaining safe spots
+            mrv_row = self.find_row_with_mrv()
+
+            # Try Queen placement in each safe spot/column in this row
+            for col in range(self.n):
+                if self.is_safe(self.board, mrv_row, col):
+                    if self.ai:
+                        # Queen Placement
+                        self.board[mrv_row][col] = 1  # Place the queen
+                        self.update_threats(
+                            self.threats, mrv_row, col
+                        )  # Update threats
+                        self.positions.add((mrv_row, col))  # Add Queen position
+                        self.used_rows.add(mrv_row)  # Add row from used rows
+                        self.step_number += 1  # Update total step counter
+                        self.queen_placement += 1  # Update Queen placement counter
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+                    # Recursively call function onto next row
+                    if await self.solve_n_queens_util_mrv():
+                        return True
+
+                    if self.ai:
+                        # Backtracking
+                        self.board[mrv_row][col] = 0  # Remove the Queen
+                        self.backtrack_threats(
+                            self.threats, mrv_row, col
+                        )  # Backtrack threats
+                        self.positions.remove((mrv_row, col))  # Remove Queen position
+                        self.used_rows.remove(mrv_row)  # Remove row from used rows
+                        self.step_number += 1  # Update total step counter
+                        self.backtracking += 1  # Update backtracking step counter
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+        return False
+
+    ### MRV + LCV
+    async def solve_n_queens_util_mrv_lcv(self):
+        if self.ai:
+
+            if len(self.used_rows) == self.n:
+                return True
+
+            mrv_row = self.find_row_with_mrv()
+            col_lcv = []
+            for col in range(self.n):
+                if self.is_safe(self.board, mrv_row, col):
+                    lcv = self.count_safe_spots_for_board(mrv_row, col)
+                    col_lcv.append((col, lcv))
+            col_lcv.sort(key=lambda x: x[1])
+
+            for col, _ in col_lcv:
+                if self.ai:
+                    self.board[mrv_row][col] = 1
+                    self.update_threats(self.threats, mrv_row, col)
+                    self.positions.add((mrv_row, col))
+                    self.used_rows.add(mrv_row)
+
+                    self.step_number += 1
+                    self.queen_placement += 1
+
+                    time = self.speed_check()
+                    if time != 0:
+                        self.steps.value = f"Total Steps: {self.step_number}"
+                        self.placements.value = (
+                            f"Total Queen Placements: {self.queen_placement}"
+                        )
+                        self.backtracks.value = (
+                            f"Total Backtracking Steps: {self.backtracking}"
+                        )
+                        self.visualize_board()
+                        self.fig.canvas.draw()
+
+                        await asyncio.sleep(1 / time)
+
+                if await self.solve_n_queens_util_mrv_lcv():
+                    return True
+
+                if self.ai:
+                    self.board[mrv_row][col] = 0
+                    self.backtrack_threats(self.threats, mrv_row, col)
+                    self.positions.remove((mrv_row, col))
+                    self.used_rows.remove(mrv_row)
+
+                    self.step_number += 1
+                    self.backtracking += 1
+
+                    time = self.speed_check()
+                    if time != 0:
+                        self.steps.value = f"Total Steps: {self.step_number}"
+                        self.placements.value = (
+                            f"Total Queen Placements: {self.queen_placement}"
+                        )
+                        self.backtracks.value = (
+                            f"Total Backtracking Steps: {self.backtracking}"
+                        )
+                        self.visualize_board()
+                        self.fig.canvas.draw()
+
+                        await asyncio.sleep(1 / time)
+
+        return False
+
+    ### LCV + AC
+    async def solve_n_queens_util_lcv_ac(self, row=0):
+        if self.ai:
+            if row >= self.n:
+                return True
+
+            if row in self.used_rows:
+                if await self.solve_n_queens_util_lcv_fc(row + 1):
+                    return True
+            else:
+
+                # Find the list of safe columns to prune off
+                prune = self.arc_consistency(row)
+
+                # Store a list of safe columns and number of remaining safe spots
+                col_lcv = []
+                for col in range(self.n):
+                    if self.is_safe(self.board, row, col):
+                        lcv = self.count_safe_spots_for_board(row, col)
+                        col_lcv.append((col, lcv))
+
+                # Sort the safe col in ascending order based on number of safe spots
+                col_lcv.sort(key=lambda x: x[1])
+
+                # Try Queen placement in each safe column (in LCV order) in this row
+                for col, _ in col_lcv:
+                    if col not in prune:  # Check whether a column is pruned off
+                        if self.ai:
+                            self.board[row][col] = 1
+                            self.update_threats(self.threats, row, col)
+                            self.positions.add((row, col))
+                            self.used_rows.add(row)
+
+                            self.step_number += 1
+                            self.queen_placement += 1
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+
+                        if await self.solve_n_queens_util_lcv_ac(row + 1):
+                            return True
+
+                        if self.ai and (row in self.used_rows):
+
+                            self.board[row][col] = 0
+                            self.backtrack_threats(self.threats, row, col)
+                            self.positions.remove((row, col))
+                            self.used_rows.remove(row)
+
+                            self.step_number += 1
+                            self.backtracking += 1
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+
+        return False
+
+    ### LCV + FC
+    async def solve_n_queens_util_lcv_fc(self, row=0):
+        if self.ai:
+            if row >= self.n:
+                return True
+
+            if row in self.used_rows:
+                if await self.solve_n_queens_util_lcv_fc(row + 1):
+                    return True
+            else:
+                # Filtering: Forward Checking
+                if self.forward_checking():
+
+                    col_lcv = []
+                    for col in range(self.n):
+                        if self.is_safe(self.board, row, col):
+                            lcv = self.count_safe_spots_for_board(row, col)
+                            col_lcv.append((col, lcv))
+                    col_lcv.sort(key=lambda x: x[1])
+
+                    for col, _ in col_lcv:
+                        if self.ai:
+                            self.board[row][col] = 1
+                            self.update_threats(self.threats, row, col)
+                            self.positions.add((row, col))
+                            self.used_rows.add(row)
+
+                            self.step_number += 1
+                            self.queen_placement += 1
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+
+                        if await self.solve_n_queens_util_lcv_fc(row + 1):
+                            return True
+
+                        if self.ai and (row in self.used_rows):
+
+                            self.board[row][col] = 0
+                            self.backtrack_threats(self.threats, row, col)
+                            self.positions.remove((row, col))
+                            self.used_rows.remove(row)
+
+                            self.step_number += 1
+                            self.backtracking += 1
+
+                            time = self.speed_check()
+                            if time != 0:
+                                self.steps.value = f"Total Steps: {self.step_number}"
+                                self.placements.value = (
+                                    f"Total Queen Placements: {self.queen_placement}"
+                                )
+                                self.backtracks.value = (
+                                    f"Total Backtracking Steps: {self.backtracking}"
+                                )
+                                self.visualize_board()
+                                self.fig.canvas.draw()
+
+                                await asyncio.sleep(1 / time)
+                else:
+                    return False
+
+        return False
+
+    ### MRV + LCV + FC
+    async def solve_n_queens_util_mrv_lcv_fc(self):
+        if self.ai:
+            if len(self.used_rows) == self.n:
+                return True
+
+            # Filtering: Forward Checking
+            if self.forward_checking():
+                # Find the target row with minimum remaining safe spots
+                mrv_row = self.find_row_with_mrv()
+
+                col_lcv = []
+                for col in range(self.n):
+                    if self.is_safe(self.board, mrv_row, col):
+                        lcv = self.count_safe_spots_for_board(mrv_row, col)
+                        col_lcv.append((col, lcv))
+                col_lcv.sort(key=lambda x: x[1])
+
+                for col, _ in col_lcv:
+                    if self.ai:
+                        self.board[mrv_row][col] = 1
+                        self.update_threats(self.threats, mrv_row, col)
+                        self.positions.add((mrv_row, col))
+                        self.used_rows.add(mrv_row)
+
+                        self.step_number += 1
+                        self.queen_placement += 1
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+                    if await self.solve_n_queens_util_mrv_lcv_fc():
+                        return True
+                    if self.ai:
+
+                        self.board[mrv_row][col] = 0
+                        self.backtrack_threats(self.threats, mrv_row, col)
+                        self.positions.remove((mrv_row, col))
+                        self.used_rows.remove(mrv_row)
+
+                        self.step_number += 1
+                        self.backtracking += 1
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+            else:
+                return False
+
+        return False
+
+    ### MRV + FC
+    async def solve_n_queens_util_mrv_fc(self):
+        if self.ai:
+            if len(self.used_rows) == self.n:
+                return True
+
+            # Filtering: Forward Checking
+            if self.forward_checking():
+                # Find the target row with minimum remaining safe spots
+                mrv_row = self.find_row_with_mrv()
+
+                row_threats = self.threats[mrv_row]  # Threats value for current row
+                # Extract index of safe columns based on row threats list
+                safe_cols = [
+                    index for index, threats in enumerate(row_threats) if threats == 0
+                ]
+
+                # Try Queen placement in each safe column in this row
+                for col in safe_cols:
+                    if self.ai:
+                        # Queen Placement
+                        self.board[mrv_row][col] = 1  # Place the queen
+                        self.update_threats(
+                            self.threats, mrv_row, col
+                        )  # Update threats
+                        self.positions.add((mrv_row, col))  # Add Queen position
+                        self.used_rows.add(mrv_row)  # Add row from used rows
+                        self.step_number += 1  # Update total step counter
+                        self.queen_placement += 1  # Update Queen placement counter
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+                    # Recursively call function onto next row
+                    if await self.solve_n_queens_util_mrv_fc():
+                        return True
+
+                    if self.ai:
+                        # Backtracking
+                        self.board[mrv_row][col] = 0  # Remove the Queen
+                        self.backtrack_threats(
+                            self.threats, mrv_row, col
+                        )  # Backtrack threats
+                        self.positions.remove((mrv_row, col))  # Remove Queen position
+                        self.used_rows.remove(mrv_row)  # Remove row from used rows
+                        self.step_number += 1  # Update total step counter
+                        self.backtracking += 1  # Update backtracking step counter
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+            else:
+                return False
+
+        return False
+
+    ### MRV + AC
+
+    async def solve_n_queens_util_mrv_ac(self):
+        if self.ai:
+            if len(self.used_rows) == self.n:
+                return True
+
+            mrv_row = self.find_row_with_mrv()
+
+            prune = self.arc_consistency(mrv_row)
+
+            row_threats = self.threats[mrv_row]
+
+            safe_cols = [
+                index for index, threats in enumerate(row_threats) if threats == 0
+            ]
+
+            for col in safe_cols:
+                if col not in prune:  # Check whether a column is pruned off
+
+                    if self.ai:
+                        # Queen Placement
+                        self.board[mrv_row][col] = 1  # Place the queen
+                        self.update_threats(
+                            self.threats, mrv_row, col
+                        )  # Update threats
+                        self.positions.add((mrv_row, col))  # Add Queen position
+                        self.used_rows.add(mrv_row)  # Add row from used rows
+                        self.step_number += 1  # Update total step counter
+                        self.queen_placement += 1  # Update Queen placement counter
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+                    if await self.solve_n_queens_util_mrv_ac():
+                        return True
+
+                    if self.ai:
+                        # Backtracking
+                        self.board[mrv_row][col] = 0  # Remove the Queen
+                        # Backtrack threats
+                        self.backtrack_threats(self.threats, mrv_row, col)
+                        self.positions.remove((mrv_row, col))  # Remove Queen position
+                        self.used_rows.remove(mrv_row)  # Remove row from used rows
+                        self.step_number += 1  # Update total step counter
+                        self.backtracking += 1  # Update backtracking step counter
+
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+        return False
+
+    ### MRV + LCV + AC
+
+    async def solve_n_queens_util_mrv_lcv_ac(self):
         if self.ai:
             if len(self.used_rows) == self.n:
                 return True
@@ -412,20 +1382,24 @@ class N_Queens_Game:
 
                         self.step_number += 1
                         self.queen_placement += 1
-                        self.steps.value = f"Total Steps: {self.step_number}"
-                        self.placements.value = (
-                            f"Total Queen Placements: {self.queen_placement}"
-                        )
-                        self.backtracks.value = (
-                            f"Total Backtracking Steps: {self.backtracking}"
-                        )
-                        self.visualize_board()
-                        self.fig.canvas.draw()
 
-                        self.play_sound("queen-audio-place")
-                        await asyncio.sleep(0.25)
-                    if await self.solve_n_queens_util():
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
+
+                    if await self.solve_n_queens_util_mrv_lcv_ac():
                         return True
+
                     if self.ai:
                         self.board[mrv_row][col] = 0
                         self.backtrack_threats(self.threats, mrv_row, col)
@@ -434,19 +1408,35 @@ class N_Queens_Game:
 
                         self.step_number += 1
                         self.backtracking += 1
-                        self.steps.value = f"Total Steps: {self.step_number}"
-                        self.placements.value = (
-                            f"Total Queen Placements: {self.queen_placement}"
-                        )
-                        self.backtracks.value = (
-                            f"Total Backtracking Steps: {self.backtracking}"
-                        )
-                        self.visualize_board()
-                        self.fig.canvas.draw()
 
-                        self.play_sound("queen-audio-back")
-                        await asyncio.sleep(0.25)
+                        time = self.speed_check()
+                        if time != 0:
+                            self.steps.value = f"Total Steps: {self.step_number}"
+                            self.placements.value = (
+                                f"Total Queen Placements: {self.queen_placement}"
+                            )
+                            self.backtracks.value = (
+                                f"Total Backtracking Steps: {self.backtracking}"
+                            )
+                            self.visualize_board()
+                            self.fig.canvas.draw()
+
+                            await asyncio.sleep(1 / time)
         return False
+
+    ### Solver Helper Functions ###
+    def forward_checking(self):
+        safe = False  # Boolean flag to return (True: Continue; False: Backtrack)
+        for i in range(self.n):
+            if i not in self.used_rows:
+                safe = False
+                for j in range(self.n):
+                    if self.threats[i][j] == 0:
+                        safe = True
+                        break
+                if not safe:
+                    return False
+        return safe
 
     def update_threats_matrix(self):
         self.threats = [[0] * self.n for _ in range(self.n)]
