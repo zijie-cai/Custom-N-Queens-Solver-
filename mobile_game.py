@@ -97,6 +97,7 @@ class N_Queens_Game:
         self.output = Output()
 
         self.visualize_board()
+        self.fig.canvas.draw()
 
     def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
@@ -167,6 +168,7 @@ class N_Queens_Game:
     def observe_hint(self, change):
         self.hint = change["new"]
         self.visualize_board()
+        self.fig.canvas.draw()
 
     def observe_ai(self, change):
         self.ai = change["new"]
@@ -201,6 +203,7 @@ class N_Queens_Game:
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
         self.ai_check.value = False
         self.visualize_board()
+        self.fig.canvas.draw()
 
     def visualize_board(self):
         board = np.zeros((self.n, self.n))
@@ -298,6 +301,7 @@ class N_Queens_Game:
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
             self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
             self.visualize_board()
+            self.fig.canvas.draw()
 
             if self.start and self.is_board_safe():
                 self.start = False
