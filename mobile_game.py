@@ -150,7 +150,7 @@ class N_Queens_Game:
             [self.size, button_row, stats_box],
             layout=Layout(margin="0 0 0 55px", overflow="hidden"),
         )
-        self.title = VBox([self.title], layout=Layout(margin="35px 0 5px 75px"))
+        self.title = VBox([self.title], layout=Layout(margin="35px 0 10px 75px"))
 
         self.create_solver_config_ui()
 
@@ -326,7 +326,7 @@ class N_Queens_Game:
             value="AI CSP Solver Configuration",
             style={"font_weight": "bold", "font_size": "16px"},
             layout=widgets.Layout(
-                margin="10px 0 10px 57.5px"
+                margin="10px 0 10px 77.5px"
             ),  # Adjust top and bottom margin
         )
 
@@ -335,6 +335,7 @@ class N_Queens_Game:
             value="Backtracking",
             description="Algorithm:",
             disabled=False,
+            layout=widgets.Layout(margin="5px 0 5px 20px"),
         )
 
         self.ordering_dropdown = Dropdown(
@@ -342,6 +343,7 @@ class N_Queens_Game:
             value="MRV + LCV",
             description="Ordering:",
             disabled=False,
+            layout=widgets.Layout(margin="5px 0 5px 20px"),
         )
 
         self.filtering_dropdown = Dropdown(
@@ -349,6 +351,7 @@ class N_Queens_Game:
             value="Arc Consistency",
             description="Filtering:",
             disabled=False,
+            layout=widgets.Layout(margin="5px 0 5px 20px"),
         )
 
         self.speed_dropdown = Dropdown(
@@ -356,6 +359,7 @@ class N_Queens_Game:
             value="1x",
             description="Speed:",
             disabled=False,
+            layout=widgets.Layout(margin="5px 0 5px 20px"),
         )
 
         # Button for resetting the solver configuration
@@ -375,7 +379,7 @@ class N_Queens_Game:
         # Horizontal box to hold the buttons
         self.buttons_box = HBox(
             [self.reset_button, self.save_button],
-            layout=widgets.Layout(margin="15px 0 0 0"),
+            layout=widgets.Layout(margin="15px 0 5px 18px"),
         )
 
         # Creating a VBox to display the configuration UI along with buttons
