@@ -326,7 +326,7 @@ class N_Queens_Game:
             value="AI CSP Solver Configuration",
             style={"font_weight": "bold", "font_size": "16px"},
             layout=widgets.Layout(
-                margin="10px 0 10px 77.5px"
+                margin="100px 0 10px 77.5px"
             ),  # Adjust top and bottom margin
         )
 
