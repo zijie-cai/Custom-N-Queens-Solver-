@@ -185,6 +185,7 @@ class N_Queens_Game:
                 )
                 self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
                 self.visualize_board()
+                self.fig.canvas.draw()
             asyncio.create_task(self.start_ai_solver())
 
     def new_reset(self, change=None):
