@@ -13,7 +13,6 @@ import math
 
 class N_Queens_Game:
     def __init__(self):
-        self.start = True
 
         self.positions = {
             (10, 2),
@@ -98,9 +97,6 @@ class N_Queens_Game:
 
         self.output = Output()
 
-        self.visualize_board()
-        self.fig.canvas.draw()
-
     def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
         self.reset.on_click(self.new_reset)
@@ -156,7 +152,7 @@ class N_Queens_Game:
         self.title = VBox([self.title], layout=Layout(margin="35px 0 10px 75px"))
 
         self.create_solver_config_ui()
-        display(self.output)
+
         with self.output:
             display(
                 VBox(
@@ -166,6 +162,7 @@ class N_Queens_Game:
             )
         self.visualize_board()
         self.fig.canvas.draw()
+        display(self.output)
 
     def observe_hint(self, change):
         self.hint = change["new"]
@@ -175,25 +172,10 @@ class N_Queens_Game:
     def observe_ai(self, change):
         self.ai = change["new"]
         if self.ai:
-            if self.start:
-                self.start = False
-                self.n = self.size.value
-                self.positions.clear()
-                self.step_number = 0
-                self.backtracking = 0
-                self.queen_placement = 0
-                self.solution.value = ""
-                self.steps.value = f"Total Steps: {self.step_number}"
-                self.placements.value = (
-                    f"Total Queen Placements: {self.queen_placement}"
-                )
-                self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
-                self.visualize_board()
-                self.fig.canvas.draw()
             asyncio.create_task(self.start_ai_solver())
 
     def new_reset(self, change=None):
-        self.start = False
+
         self.n = self.size.value
         self.positions.clear()
         self.step_number = 0
@@ -233,10 +215,6 @@ class N_Queens_Game:
         self.ax.set_xticklabels([])
         self.ax.set_yticklabels([])
         self.ax.set_aspect("equal")
-        title_font = {"fontsize": 10}
-        self.ax.set_title(
-            "AI-Queens" if self.start else f"{self.n}-Queens", fontdict=title_font
-        )
         self.ax.invert_yaxis()
         self.fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
@@ -335,25 +313,16 @@ class N_Queens_Game:
     def onclick(self, event):
         if event.inaxes and event.xdata is not None and event.ydata is not None:
             row, col = int(event.ydata), int(event.xdata)
-            if (
-                (row, col) not in self.positions
-                and len(self.positions) < (self.n * self.n)
-                and not self.start
+            if (row, col) not in self.positions and len(self.positions) < (
+                self.n * self.n
             ):
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
 
-            elif (row, col) in self.positions and not self.start:
+            elif (row, col) in self.positions:
                 self.positions.remove((row, col))
                 self.backtracking += 1
-                self.step_number += 1
-
-            elif self.start:
-                self.start = False
-                self.positions.clear()
-                self.positions.add((row, col))
-                self.queen_placement += 1
                 self.step_number += 1
 
             self.steps.value = f"Total Steps: {self.step_number}"
@@ -362,9 +331,6 @@ class N_Queens_Game:
 
             self.visualize_board()
             self.fig.canvas.draw()
-
-            if self.start and self.is_board_safe():
-                self.start = False
 
             if len(self.positions) == self.n and self.count_conflicts() == 0:
 
@@ -380,7 +346,6 @@ class N_Queens_Game:
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
         if len(self.positions) == self.n and self.count_conflicts() == 0:
-
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         else:
             self.solution.value = ""
@@ -522,7 +487,6 @@ class N_Queens_Game:
             return 0
 
     async def solve(self):
-        self.start = False
 
         self.board = [[0] * self.n for _ in range(self.n)]
         for r, c in self.positions:
