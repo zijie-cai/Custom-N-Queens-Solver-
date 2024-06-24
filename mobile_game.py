@@ -165,6 +165,8 @@ class N_Queens_Game:
                 )
             )
 
+        self.visualize_board()
+        self.fig.canvas.draw()
         display(self.output)
 
     def observe_hint(self, change):
