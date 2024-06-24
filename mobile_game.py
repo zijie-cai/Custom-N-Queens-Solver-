@@ -156,19 +156,16 @@ class N_Queens_Game:
         self.title = VBox([self.title], layout=Layout(margin="35px 0 10px 75px"))
 
         self.create_solver_config_ui()
-
-    
-
+        display(self.output)
         with self.output:
-            clear_output(wait=True)
-            display(HTML(css))
             display(
                 VBox(
                     [self.title, self.fig.canvas, self.user_control],
                     layout=Layout(margin="-47.5px 0px 0 0px"),
                 )
             )
-        display(self.output)
+
+        
 
     def observe_hint(self, change):
         self.hint = change["new"]
