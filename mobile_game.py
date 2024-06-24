@@ -335,8 +335,10 @@ class N_Queens_Game:
     def onclick(self, event):
         if event.inaxes and event.xdata is not None and event.ydata is not None:
             row, col = int(event.ydata), int(event.xdata)
-            if (row, col) not in self.positions and len(self.positions) < (
-                self.n * self.n
+            if (
+                (row, col) not in self.positions
+                and len(self.positions) < (self.n * self.n)
+                and not self.start
             ):
                 self.positions.add((row, col))
                 self.queen_placement += 1
