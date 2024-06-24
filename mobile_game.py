@@ -7,6 +7,8 @@ import asyncio
 import random
 from IPython.display import Audio
 from IPython.display import display, HTML, Javascript
+import matplotlib.patches as patches
+import math
 
 
 class N_Queens_Game:
@@ -220,17 +222,17 @@ class N_Queens_Game:
                     [x, x + 1], y, y + 1, color=color, edgecolor="none"
                 )
 
-        for y, x in self.positions:
-            img = OffsetImage(queen_img, zoom=zoom_factor)
-            ab = AnnotationBbox(
-                img, (x + 0.5, y + 0.5), frameon=False, boxcoords="data", pad=0
-            )
-            self.ax.add_artist(ab)
-
         self.ax.set_xlim(0, self.n)
         self.ax.set_ylim(0, self.n)
         self.ax.set_xticks([])
         self.ax.set_yticks([])
+        # Optionally, add grid lines
+        self.ax.set_xticks([i for i in range(self.n + 1)])
+        self.ax.set_yticks([i for i in range(self.n + 1)])
+        self.ax.grid(which="both", color="black", linestyle="-", linewidth=0.5)
+        self.ax.set_xticklabels([])
+        self.ax.set_yticklabels([])
+        self.ax.set_aspect("equal")
         title_font = {"fontsize": 10}
         self.ax.set_title(
             "AI-Queens" if self.start else f"{self.n}-Queens", fontdict=title_font
@@ -239,26 +241,47 @@ class N_Queens_Game:
         self.fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
         if self.hint:
+            # Optionally, add grid lines
+            self.ax.set_xticks([i for i in range(self.n + 1)])
+            self.ax.set_yticks([i for i in range(self.n + 1)])
+            self.ax.grid(which="both", color="black", linestyle="-", linewidth=0.5)
+            self.ax.set_xticklabels([])
+            self.ax.set_yticklabels([])
+            self.ax.set_aspect("equal")
+
+            max_threat = max(
+                self.compute_threats(y, x) for y in range(self.n) for x in range(self.n)
+            )
+
             for y in range(self.n):
                 for x in range(self.n):
-                    if (y, x) not in self.positions:
-                        threat = self.compute_threats(y, x)
-                        color = "green" if threat == 0 else "red"
-                        self.ax.text(
-                            x + 0.5,
-                            y + 0.5,
-                            str(threat),
-                            fontsize=8,
-                            ha="center",
-                            va="center",
-                            color=color,
-                        )
+
+                    threat = self.compute_threats(y, x)
+                    if threat == 0:
+                        color = "#5ced73"  # Green for no threat
+                    else:
+                        # Calculate the intensity of red based on the threat level
+                        intensity = 255 - int(255 * (threat / max_threat))
+                        color = f"#FF{intensity:02X}{intensity:02X}"  # Gradient of red
+                    self.ax.add_patch(plt.Rectangle((x, y), 1, 1, color=color))
+
+        for y, x in self.positions:
+            img = OffsetImage(queen_img, zoom=zoom_factor)
+            ab = AnnotationBbox(
+                img, (x + 0.5, y + 0.5), frameon=False, boxcoords="data", pad=0
+            )
+            self.ax.add_artist(ab)
 
     def compute_threats(self, row, col):
         threats = 0
         for y, x in self.positions:
+
             if y == row or x == col or abs(y - row) == abs(x - col):
                 threats += 1
+
+            if (row, col) == (y, x):
+                threats -= 1
+
         return threats
 
     def is_board_safe(self):
@@ -277,10 +300,44 @@ class N_Queens_Game:
                         return False
         return True
 
+    def find_most_conflict(self):
+        most_conflict = (-1, -1)
+        conflict = 0
+        max = -1
+        for row1, col1 in self.positions:
+            for row2, col2 in self.positions:
+                if (row1, col1) != (row2, col2):
+                    if (
+                        row1 == row2
+                        or col1 == col2
+                        or abs(row1 - row2) == abs(col1 - col2)
+                    ):
+                        conflict += 1
+                if conflict > max:
+                    max = conflict
+                    most_conflict = (row1, col1)
+
+        return most_conflict
+
+    def count_conflicts(self):
+        conflict = 0
+        for row1, col1 in self.positions:
+            for row2, col2 in self.positions:
+                if (row1, col1) != (row2, col2):
+                    if (
+                        row1 == row2
+                        or col1 == col2
+                        or abs(row1 - row2) == abs(col1 - col2)
+                    ):
+                        conflict += 1
+        return conflict
+
     def onclick(self, event):
         if event.inaxes and event.xdata is not None and event.ydata is not None:
             row, col = int(event.ydata), int(event.xdata)
-            if (row, col) not in self.positions and self.compute_threats(row, col) == 0:
+            if (row, col) not in self.positions and len(self.positions) < (
+                self.n * self.n
+            ):
                 self.positions.add((row, col))
                 self.queen_placement += 1
                 self.step_number += 1
@@ -300,13 +357,14 @@ class N_Queens_Game:
             self.steps.value = f"Total Steps: {self.step_number}"
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
             self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+
             self.visualize_board()
             self.fig.canvas.draw()
 
             if self.start and self.is_board_safe():
                 self.start = False
 
-            if len(self.positions) == self.n:
+            if len(self.positions) == self.n and self.count_conflicts() == 0:
 
                 self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
             else:
@@ -319,7 +377,7 @@ class N_Queens_Game:
         self.steps.value = f"Total Steps: {self.step_number}"
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
-        if len(self.positions) == self.n:
+        if len(self.positions) == self.n and self.count_conflicts() == 0:
 
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         else:
@@ -464,6 +522,7 @@ class N_Queens_Game:
 
     async def solve(self):
         self.start = False
+
         self.board = [[0] * self.n for _ in range(self.n)]
         for r, c in self.positions:
             self.board[r][c] = 1
@@ -474,6 +533,36 @@ class N_Queens_Game:
         algorithm = self.algorithm_dropdown.value
         ordering = self.ordering_dropdown.value
         filtering = self.filtering_dropdown.value
+
+        conflicts = self.count_conflicts()
+        while conflicts != 0 and self.ai:
+            row, col = self.find_most_conflict()
+            # Backtracking
+            self.board[row][col] = 0  # Remove the Queen
+            # Backtrack threats
+            self.backtrack_threats(self.threats, row, col)
+            self.positions.remove((row, col))  # Remove Queen position
+
+            used = True
+
+            for y, x in self.positions:
+                if y == row:
+                    used = False
+            if used:
+                self.used_rows.remove(row)  # Remove row from used rows
+
+            conflicts = self.count_conflicts()
+
+            self.step_number += 1  # Update total step counter
+            self.backtracking += 1  # Update backtracking step counter
+
+            time = self.speed_check()
+            if time != 0:
+                self.steps.value = f"Total Steps: {self.step_number}"
+                self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
+                self.visualize_board()
+                self.fig.canvas.draw()
+                await asyncio.sleep(1 / time)
 
         # Call the appropriate solver method based on the configuration
         if algorithm == "Backtracking":
@@ -555,7 +644,7 @@ class N_Queens_Game:
                 if ordering == "None" and filtering == "None":
                     solver = await self.solve_n_queens_util_backtracking()
 
-        if self.ai and len(self.positions) == self.n:
+        if self.ai and len(self.positions) == self.n and self.count_conflicts() == 0:
 
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         self.visualize_board()
@@ -622,8 +711,8 @@ class N_Queens_Game:
                                 )
                                 self.visualize_board()
                                 self.fig.canvas.draw()
-
                                 await asyncio.sleep(1 / time)
+
         return False
 
     ### FC
