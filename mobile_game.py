@@ -164,8 +164,8 @@ class N_Queens_Game:
                     layout=Layout(margin="-47.5px 0px 0 0px"),
                 )
             )
-
-        
+        self.visualize_board()
+        self.fig.canvas.draw()
 
     def observe_hint(self, change):
         self.hint = change["new"]
