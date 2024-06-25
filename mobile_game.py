@@ -80,11 +80,21 @@ class N_Queens_Game:
             layout=widgets.Layout(margin="10px 0 0 50px"),
             style={"color": "#769656"},
         )
-        self.title = widgets.Label(
-            value="N-Queens Playground",
-            style={"font_weight": "bold", "font_size": "20px"},
-            layout=widgets.Layout(margin="10px 0 0px 0px"),
+        self.title = widgets.Button(
+            description="N-Queens Playground",  # Use 'description' instead of 'value' for buttons
+            button_style="",  # Optional: styles like 'success', 'info', 'warning', 'danger', or ''
+            style={
+                "button_color": "transparent",
+                "font_weight": "bold",
+                "font_size": "20px",
+            },  # Apply text styling here
+            layout=widgets.Layout(
+                margin="10px 0px 0px -20px",
+                width="250px",
+            ),  # Adjust layout as needed
         )
+        self.title.on_click(self.title_click)  # Define a method to handle click events
+
         self.size = widgets.IntSlider(
             value=self.n,
             min=4,
@@ -96,8 +106,9 @@ class N_Queens_Game:
         )
 
         self.output = Output()
-        self.visualize_board()
-        self.fig.canvas.draw()
+
+    def title_click(self, b):
+        self.create_solver_menu_ui()
 
     def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
@@ -145,25 +156,27 @@ class N_Queens_Game:
         self.title = VBox([self.title], layout=Layout(margin="35px 0 10px 75px"))
 
         self.create_solver_config_ui()
-        display(self.output)
-        css = """
-            <style>
-            .button-style { 
-                text-decoration: underline;
-            }
-            </style>
-            """
-        with self.output:
-            clear_output(wait=True)
-            display(HTML(css))
-            display(
-                VBox(
-                    [self.title, self.fig.canvas, self.user_control],
-                    layout=Layout(margin="-47.5px 0px 0 0px"),
-                )
-            )
-            self.visualize_board()
-            self.fig.canvas.draw()
+        self.create_solver_menu_ui()
+
+        # display(self.output)
+        # css = """
+        # <style>
+        # .button-style {
+        #     text-decoration: underline;
+        # }
+        # </style>
+        #    """
+        # with self.output:
+        #  clear_output(wait=True)
+        #   display(HTML(css))
+        #   display(
+        #       VBox(
+        #           [self.title, self.fig.canvas, self.user_control],
+        #           layout=Layout(margin="-47.5px 0px 0 0px"),
+        #       )
+        #  )
+        #  self.visualize_board()
+        #   self.fig.canvas.draw()
 
     def observe_hint(self, change):
         self.hint = change["new"]
@@ -350,6 +363,73 @@ class N_Queens_Game:
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
         else:
             self.solution.value = ""
+
+    def start_game(self, button):
+        # Logic to start the game
+        clear_output(wait=True)
+        self.display_game_interface()
+
+    def display_game_interface(self):
+        display(self.output)
+        css = """
+            <style>
+            .button-style { 
+                text-decoration: underline;
+            }
+            </style>
+            """
+        with self.output:
+            clear_output(wait=True)
+            display(HTML(css))
+            display(
+                VBox(
+                    [self.title, self.fig.canvas, self.user_control],
+                    layout=Layout(margin="-47.5px 0px 0 0px"),
+                )
+            )
+            self.visualize_board()
+            self.fig.canvas.draw()
+
+    def create_solver_menu_ui(self):
+
+        author_info = widgets.HTML(
+            value="<h3 style='color: gray;'>Created by Zijie Cai</h3>",
+            layout=widgets.Layout(margin="-15px 0 20px 108px", align_self="flex-start"),
+        )
+        description = widgets.HTML(
+            value="""
+            <p style='text-align: justify; text-indent: 20px;'>
+            Welcome to the N-Queens Playground! This interactive tool provides a dynamic visualization to help you solve the N-Queens puzzle. It features a step-by-step AI solver that employs Constraint Satisfaction Problem (CSP) algorithms and heuristics to place N queens on an NxN chessboard without any two queens threatening each other. Click the button below to configure the board and watch the solver in action!
+            </p>
+            """,
+            layout=widgets.Layout(
+                margin="-35px 0 20px 15px", width="335px", align_self="flex-start"
+            ),
+        )
+        start_button = widgets.Button(
+            description="Enter Playground",
+            button_style="success",  # 'success', 'info', 'warning', 'danger' or ''
+            style={"font_weight": "bold"},
+            layout=widgets.Layout(
+                width="200px",
+                height="50px",
+                align_self="flex-start",
+                margin="-10px 0 20px 83px",
+            ),
+        )
+
+        start_button.on_click(self.start_game)
+
+        vbox = widgets.VBox(
+            [self.title, author_info, description, start_button],
+            layout=widgets.Layout(
+                margin="-47.5px 0px 0 0px",
+                width="100%",  # Ensuring it doesn't exceed the width of its parent
+                overflow="auto",
+            ),
+        )
+        clear_output(wait=True)
+        display(vbox)
 
     def create_solver_config_ui(self):
         # Title for the configuration UI
