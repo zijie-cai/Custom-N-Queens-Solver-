@@ -187,22 +187,6 @@ class N_Queens_Game:
         self.ai_check.value = False
         self.visualize_board()
         self.fig.canvas.draw()
-        css = """
-            <style>
-            .button-style { 
-                text-decoration: underline;
-            }
-            </style>
-            """
-        with self.output:
-            clear_output(wait=True)
-            display(HTML(css))
-            display(
-                VBox(
-                    [self.title, self.fig.canvas, self.user_control],
-                    layout=Layout(margin="-47.5px 0px 0 0px"),
-                )
-            )
 
     def visualize_board(self):
         board = np.zeros((self.n, self.n))
