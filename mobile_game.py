@@ -96,8 +96,6 @@ class N_Queens_Game:
         )
 
         self.output = Output()
-
-    def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
         self.reset.on_click(self.new_reset)
 
