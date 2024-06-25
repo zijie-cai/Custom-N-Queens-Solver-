@@ -96,8 +96,9 @@ class N_Queens_Game:
         )
 
         self.output = Output()
-        self.visualize_board()
-        self.fig.canvas.draw()
+        with self.output:
+            self.visualize_board()
+            self.fig.canvas.draw()
 
     def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
@@ -167,8 +168,9 @@ class N_Queens_Game:
 
     def observe_hint(self, change):
         self.hint = change["new"]
-        self.visualize_board()
-        self.fig.canvas.draw()
+        with self.output:
+            self.visualize_board()
+            self.fig.canvas.draw()
 
     def observe_ai(self, change):
         self.ai = change["new"]
@@ -187,8 +189,9 @@ class N_Queens_Game:
         self.placements.value = f"Total Queen Placements: {self.queen_placement}"
         self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
         self.ai_check.value = False
-        self.visualize_board()
-        self.fig.canvas.draw()
+        with self.output:
+            self.visualize_board()
+            self.fig.canvas.draw()
 
     def visualize_board(self):
         board = np.zeros((self.n, self.n))
@@ -330,8 +333,9 @@ class N_Queens_Game:
             self.placements.value = f"Total Queen Placements: {self.queen_placement}"
             self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
 
-            self.visualize_board()
-            self.fig.canvas.draw()
+            with self.output:
+                self.visualize_board()
+                self.fig.canvas.draw()
 
             if len(self.positions) == self.n and self.count_conflicts() == 0:
 
@@ -526,8 +530,9 @@ class N_Queens_Game:
             if time != 0:
                 self.steps.value = f"Total Steps: {self.step_number}"
                 self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
-                self.visualize_board()
-                self.fig.canvas.draw()
+                with self.output:
+                    self.visualize_board()
+                    self.fig.canvas.draw()
                 await asyncio.sleep(1 / time)
 
         # Call the appropriate solver method based on the configuration
@@ -577,8 +582,9 @@ class N_Queens_Game:
             if time != 0:
                 self.steps.value = f"Total Steps: {self.step_number}"
                 self.backtracks.value = f"Total Backtracking Steps: {self.backtracking}"
-                self.visualize_board()
-                self.fig.canvas.draw()
+                with self.output:
+                    self.visualize_board()
+                    self.fig.canvas.draw()
                 await asyncio.sleep(1 / time)
 
             if algorithm == "Backtracking":
@@ -613,8 +619,9 @@ class N_Queens_Game:
         if self.ai and len(self.positions) == self.n and self.count_conflicts() == 0:
 
             self.solution.value = '<span style="color:#769656; font-weight:bold; font-size:15px;">Solution Found!</span>'
-        self.visualize_board()
-        self.fig.canvas.draw()
+        with self.output:
+            self.visualize_board()
+            self.fig.canvas.draw()
 
     ### Backtracking
     async def solve_n_queens_util_backtracking(self, row=0):
@@ -648,8 +655,10 @@ class N_Queens_Game:
                                 self.backtracks.value = (
                                     f"Total Backtracking Steps: {self.backtracking}"
                                 )
-                                self.visualize_board()
-                                self.fig.canvas.draw()
+
+                                with self.output:
+                                    self.visualize_board()
+                                    self.fig.canvas.draw()
 
                                 await asyncio.sleep(1 / time)
 
@@ -675,8 +684,9 @@ class N_Queens_Game:
                                 self.backtracks.value = (
                                     f"Total Backtracking Steps: {self.backtracking}"
                                 )
-                                self.visualize_board()
-                                self.fig.canvas.draw()
+                                with self.output:
+                                    self.visualize_board()
+                                    self.fig.canvas.draw()
                                 await asyncio.sleep(1 / time)
 
         return False
@@ -723,8 +733,9 @@ class N_Queens_Game:
                                 self.backtracks.value = (
                                     f"Total Backtracking Steps: {self.backtracking}"
                                 )
-                                self.visualize_board()
-                                self.fig.canvas.draw()
+                                with self.output:
+                                    self.visualize_board()
+                                    self.fig.canvas.draw()
 
                                 await asyncio.sleep(1 / time)
 
@@ -750,8 +761,10 @@ class N_Queens_Game:
                                 self.backtracks.value = (
                                     f"Total Backtracking Steps: {self.backtracking}"
                                 )
-                                self.visualize_board()
-                                self.fig.canvas.draw()
+
+                                with self.output:
+                                    self.visualize_board()
+                                    self.fig.canvas.draw()
 
                                 await asyncio.sleep(1 / time)
                 else:
