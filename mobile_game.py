@@ -96,6 +96,8 @@ class N_Queens_Game:
         )
 
         self.output = Output()
+        self.visualize_board()
+        self.fig.canvas.draw()
 
     def setup(self):
         self.reset = Button(description="New", layout=Layout(width="120px"))
