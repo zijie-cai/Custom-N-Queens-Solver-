@@ -118,15 +118,6 @@ class N_Queens_Game:
             },
         )
 
-        css = """
-        <style>
-        .button-style { 
-            text-decoration: underline;
-        }
-        </style>
-        """
-        with self.output:
-            display(HTML(css))
         self.ai_label.add_class("button-style")
         self.ai_widget = HBox(
             [self.ai_check, self.ai_label],
@@ -154,15 +145,23 @@ class N_Queens_Game:
         self.create_solver_config_ui()
         self.visualize_board()
         self.fig.canvas.draw()
-
+        display(self.output)
+        css = """
+            <style>
+            .button-style { 
+                text-decoration: underline;
+            }
+            </style>
+            """
         with self.output:
+            clear_output(wait=True)
+            display(HTML(css))
             display(
                 VBox(
                     [self.title, self.fig.canvas, self.user_control],
                     layout=Layout(margin="-47.5px 0px 0 0px"),
                 )
             )
-        display(self.output)
 
     def observe_hint(self, change):
         self.hint = change["new"]
