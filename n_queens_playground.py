@@ -542,7 +542,9 @@ class N_Queens_Playground:
                 display(
                     VBox(
                         [self.title, self.canvas, self.user_control],
-                        layout=Layout(margin="-47.5px 0px 0 0px", width="100%", overflow="auto"),
+                        layout=Layout(
+                            margin="-47.5px 0px 0 0px", width="100%", overflow="auto"
+                        ),
                     )
                 )
         else:
