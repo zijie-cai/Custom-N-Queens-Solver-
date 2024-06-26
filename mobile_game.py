@@ -395,7 +395,7 @@ class N_Queens_Game:
 
         author_info = widgets.HTML(
             value="<h3 style='color: gray;'>Created by Zijie Cai</h3>",
-            layout=widgets.Layout(margin="-15px 0 20px 108px", align_self="flex-start"),
+            layout=widgets.Layout(margin="-15px 0 20px 108px", align_self="center"),
         )
         description = widgets.HTML(
             value="""
@@ -404,7 +404,7 @@ class N_Queens_Game:
             </p>
             """,
             layout=widgets.Layout(
-                margin="-35px 0 20px 15px", width="335px", align_self="flex-start"
+                margin="-35px 0 20px 15px", width="335px", align_self="center"
             ),
         )
         start_button = widgets.Button(
@@ -414,7 +414,7 @@ class N_Queens_Game:
             layout=widgets.Layout(
                 width="200px",
                 height="50px",
-                align_self="flex-start",
+                align_self="center",
                 margin="-10px 0 20px 83px",
             ),
         )
