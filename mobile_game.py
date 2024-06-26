@@ -106,6 +106,7 @@ class N_Queens_Game:
         )
 
         self.output = Output()
+        display(self.output)
 
     def title_click(self, b):
         self.create_solver_menu_ui()
@@ -428,8 +429,9 @@ class N_Queens_Game:
                 overflow="auto",
             ),
         )
-        clear_output(wait=True)
-        display(vbox)
+        with self.output:
+            clear_output(wait=True)
+            display(vbox)
 
     def create_solver_config_ui(self):
         # Title for the configuration UI
