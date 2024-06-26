@@ -89,8 +89,7 @@ class N_Queens_Game:
                 "font_size": "20px",
             },  # Apply text styling here
             layout=widgets.Layout(
-                margin="10px 0px 0px -20px",
-                width="250px",
+                margin="10px 0px 0px -20px", width="250px", align_self="center"
             ),  # Adjust layout as needed
         )
         self.title.on_click(self.title_click)  # Define a method to handle click events
@@ -395,7 +394,7 @@ class N_Queens_Game:
 
         author_info = widgets.HTML(
             value="<h3 style='color: gray;'>Created by Zijie Cai</h3>",
-            layout=widgets.Layout(margin="-15px 0 20px 108px", align_self="center"),
+            layout=widgets.Layout(margin="0px 0 0px 0px", align_self="center"),
         )
         description = widgets.HTML(
             value="""
@@ -404,7 +403,7 @@ class N_Queens_Game:
             </p>
             """,
             layout=widgets.Layout(
-                margin="-35px 0 20px 15px", width="335px", align_self="center"
+                margin="0px 0 0px 0px", width="335px", align_self="center"
             ),
         )
         start_button = widgets.Button(
@@ -415,7 +414,7 @@ class N_Queens_Game:
                 width="200px",
                 height="50px",
                 align_self="center",
-                margin="-10px 0 20px 83px",
+                margin="-0px 0 0px 0px",
             ),
         )
 
@@ -424,7 +423,7 @@ class N_Queens_Game:
         vbox = widgets.VBox(
             [self.title, author_info, description, start_button],
             layout=widgets.Layout(
-                margin="-47.5px 0px 0 0px",
+                margin="0px 0px 0 0px",
                 width="100%",  # Ensuring it doesn't exceed the width of its parent
                 overflow="auto",
             ),
