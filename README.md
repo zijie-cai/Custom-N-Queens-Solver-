@@ -7,7 +7,7 @@ This repository showcases an intuitive visualization tool for understanding the 
 ## Quick Access
 You can access the N-Queens Playground hosted on Binder without the need to install anything locally.
 
-**Use the Link** [N-Queens-Playground](https://mybinder.org/v2/gh/zijie-cai/N-Queens-Playground/HEAD?urlpath=%2Fvoila%2Frender%2Fn-queens-playground.ipynb)
+**Use this Link** [N-Queens-Playground](https://mybinder.org/v2/gh/zijie-cai/N-Queens-Playground/HEAD?urlpath=%2Fvoila%2Frender%2Fn-queens-playground.ipynb)
 
 ## Overview 
 The N-Queens problem involves placing N number of Queens on a size N x N chessboard in a way such that no two Queens can threaten each other. The approach is to formulate N-Queens as a CSP problem, where the objective is to find a solution of Queen placements on the board that satisfies all pre-defined constraints.
