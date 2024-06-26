@@ -1,4 +1,4 @@
-# ♕ Custom N-Queens Playground + Solver ♕
+# ♕ N-Queens Playground + AI CSP Solver ♕
 This repository showcases an intuitive visualization tool for understanding the various effects of Algorithms, Ordering Heuristics, and Filtering Techniques while solving N-Queens as a Constraint Satisfaction Problem (CSP).
 
 <img src="demo(1).png" width="550"/>
