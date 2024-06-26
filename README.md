@@ -5,7 +5,7 @@ This repository showcases an intuitive visualization tool for understanding the 
 <img src="demo(2).png" width="550"/>
 
 ## Quick Access
-You can access the N-Queens Playground here hosted on Binder without the need to install anything locally.
+You can access the N-Queens Playground below hosted on Binder without the need to install anything locally.
 
 [N-Queens-Playground](https://mybinder.org/v2/gh/zijie-cai/N-Queens-Playground/HEAD?urlpath=%2Fvoila%2Frender%2Fn-queens-playground.ipynb)
 
