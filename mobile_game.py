@@ -151,7 +151,7 @@ class N_Queens_Game:
         )
         self.user_control = VBox(
             [self.size, button_row, stats_box],
-            layout=Layout(margin="0 0 0 55px", overflow="hidden", align_self="center"),
+            layout=Layout(margin="0 0 0 75px", overflow="hidden", align_self="center"),
         )
         self.title = VBox([self.title], layout=Layout(margin="35px 0 10px 75px"))
 
@@ -443,9 +443,9 @@ class N_Queens_Game:
         # Title for the configuration UI
         self.config_title = widgets.Label(
             value="AI CSP Solver Configuration",
-            style={"font_weight": "bold", "font_size": "16px"},
+            style={"font_weight": "bold", "font_size": "20px"},
             layout=widgets.Layout(
-                margin="150px 0 10px 50px", align_self="center"
+                margin="150px 0 10px 45px", align_self="center"
             ),  # Adjust top and bottom margin
         )
 
