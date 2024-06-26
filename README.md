@@ -24,7 +24,6 @@ The N-Queens problem involves placing N number of Queens on a size N x N chessbo
    - Exactly N Queens on the board when a solution is found.
      
 ### Solve Methods
-For more details about each method, please refer to the comment section in the corresponding py file. 
 - **Algorithms**
   - Backtracking Search  
 - **Ordering Heuristics:**
@@ -48,4 +47,3 @@ For more details about each method, please refer to the comment section in the c
 ## Potential Improvements
 - Enhance the N-Queens Game by adding more constraints
 - Add support for more solver algorithms
-- Adapt the web app interface for access on mobile devices
