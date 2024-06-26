@@ -389,9 +389,7 @@ class N_Queens_Game:
             display(
                 VBox(
                     [self.title, self.canvas, self.user_control],
-                    layout=Layout(
-                        margin="-47.5px 0px 0 0px",
-                    ),
+                    layout=Layout(margin="-47.5px 0px 0 0px", width="auto"),
                 )
             )
             self.visualize_board()
@@ -430,7 +428,7 @@ class N_Queens_Game:
         vbox = widgets.VBox(
             [self.title, author_info, description, start_button],
             layout=widgets.Layout(
-                margin="0px 0px 0 0px",
+                margin="75px 0px 0 0px",
                 width="100%",  # Ensuring it doesn't exceed the width of its parent
                 overflow="auto",
             ),
@@ -511,6 +509,7 @@ class N_Queens_Game:
                 self.speed_dropdown,
                 self.buttons_box,
             ],
+            layout=widgets.Layout(margin="0px 0 0px -25px"),
         )
         return self.config_ui
 
