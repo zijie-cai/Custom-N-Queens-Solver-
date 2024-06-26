@@ -89,7 +89,7 @@ class N_Queens_Game:
                 "font_size": "20px",
             },  # Apply text styling here
             layout=widgets.Layout(
-                margin="10px 0px 0px -20px", width="250px", align_self="center"
+                margin="10px 0px 0px -75px", width="250px", align_self="center"
             ),  # Adjust layout as needed
         )
         self.title.on_click(self.title_click)  # Define a method to handle click events
@@ -151,9 +151,14 @@ class N_Queens_Game:
         )
         self.user_control = VBox(
             [self.size, button_row, stats_box],
-            layout=Layout(margin="0 0 0 55px", overflow="hidden"),
+            layout=Layout(margin="0 0 0 55px", overflow="hidden", align_self="center"),
         )
         self.title = VBox([self.title], layout=Layout(margin="35px 0 10px 75px"))
+
+        self.canvas = VBox(
+            [self.fig.canvas],
+            layout=Layout(margin="0px 0 0px 0px", align_self="center"),
+        )
 
         self.create_solver_config_ui()
         self.create_solver_menu_ui()
@@ -383,8 +388,10 @@ class N_Queens_Game:
             display(HTML(css))
             display(
                 VBox(
-                    [self.title, self.fig.canvas, self.user_control],
-                    layout=Layout(margin="-47.5px 0px 0 0px"),
+                    [self.title, self.canvas, self.user_control],
+                    layout=Layout(
+                        margin="-47.5px 0px 0 0px",
+                    ),
                 )
             )
             self.visualize_board()
@@ -394,7 +401,7 @@ class N_Queens_Game:
 
         author_info = widgets.HTML(
             value="<h3 style='color: gray;'>Created by Zijie Cai</h3>",
-            layout=widgets.Layout(margin="0px 0 0px 0px", align_self="center"),
+            layout=widgets.Layout(margin="-10px 0px -10px 0px", align_self="center"),
         )
         description = widgets.HTML(
             value="""
@@ -414,7 +421,7 @@ class N_Queens_Game:
                 width="200px",
                 height="50px",
                 align_self="center",
-                margin="-0px 0 0px 0px",
+                margin="15px 0 0px 0px",
             ),
         )
 
@@ -438,7 +445,7 @@ class N_Queens_Game:
             value="AI CSP Solver Configuration",
             style={"font_weight": "bold", "font_size": "16px"},
             layout=widgets.Layout(
-                margin="150px 0 10px 77.5px"
+                margin="150px 0 10px 50px", align_self="center"
             ),  # Adjust top and bottom margin
         )
 
@@ -447,7 +454,7 @@ class N_Queens_Game:
             value="Backtracking",
             description="Algorithm:",
             disabled=False,
-            layout=widgets.Layout(margin="5px 0 5px 20px"),
+            layout=widgets.Layout(margin="5px 0 5px 20px", align_self="center"),
         )
 
         self.ordering_dropdown = Dropdown(
@@ -455,7 +462,7 @@ class N_Queens_Game:
             value="MRV + LCV",
             description="Ordering:",
             disabled=False,
-            layout=widgets.Layout(margin="5px 0 5px 20px"),
+            layout=widgets.Layout(margin="5px 0 5px 20px", align_self="center"),
         )
 
         self.filtering_dropdown = Dropdown(
@@ -463,7 +470,7 @@ class N_Queens_Game:
             value="Arc Consistency",
             description="Filtering:",
             disabled=False,
-            layout=widgets.Layout(margin="5px 0 5px 20px"),
+            layout=widgets.Layout(margin="5px 0 5px 20px", align_self="center"),
         )
 
         self.speed_dropdown = Dropdown(
@@ -471,7 +478,7 @@ class N_Queens_Game:
             value="1x",
             description="Speed:",
             disabled=False,
-            layout=widgets.Layout(margin="5px 0 5px 20px"),
+            layout=widgets.Layout(margin="5px 0 5px 20px", align_self="center"),
         )
 
         # Button for resetting the solver configuration
@@ -491,7 +498,7 @@ class N_Queens_Game:
         # Horizontal box to hold the buttons
         self.buttons_box = HBox(
             [self.reset_button, self.save_button],
-            layout=widgets.Layout(margin="15px 0 5px 18px"),
+            layout=widgets.Layout(margin="15px 0 5px 18px", align_self="center"),
         )
 
         # Creating a VBox to display the configuration UI along with buttons
@@ -503,7 +510,7 @@ class N_Queens_Game:
                 self.filtering_dropdown,
                 self.speed_dropdown,
                 self.buttons_box,
-            ]
+            ],
         )
         return self.config_ui
 
@@ -537,7 +544,7 @@ class N_Queens_Game:
                 display(HTML(css))
                 display(
                     VBox(
-                        [self.title, self.fig.canvas, self.user_control],
+                        [self.title, self.canvas, self.user_control],
                         layout=Layout(margin="-47.5px 0px 0 0px"),
                     )
                 )
