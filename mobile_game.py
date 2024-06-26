@@ -390,7 +390,7 @@ class N_Queens_Game:
                 VBox(
                     [self.title, self.canvas, self.user_control],
                     layout=Layout(
-                        margin="-47.5px 0px 0 0px", width="100%", overflow="auto"
+                        margin="-47.5px 0px 0 0px", width="90%", overflow="auto"
                     ),
                 )
             )
