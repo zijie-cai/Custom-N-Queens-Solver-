@@ -389,7 +389,7 @@ class N_Queens_Game:
             display(
                 VBox(
                     [self.title, self.canvas, self.user_control],
-                    layout=Layout(margin="-47.5px 0px 0 0px", width="1500px"),
+                    layout=Layout(margin="-47.5px 0px 0 0px", width="100%"),
                 )
             )
             self.visualize_board()
