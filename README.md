@@ -3,9 +3,10 @@ This repository showcases an intuitive visualization tool for understanding the 
 
 <p align="center">
   <img src="demo1.png" width="400"/>
-  
 </p>
+<p align="center">
 <img src="demo2.png" width="400"/>
+</p>
 
 ## Quick Access
 You can access the N-Queens Playground hosted on Binder without the need to install anything locally.
