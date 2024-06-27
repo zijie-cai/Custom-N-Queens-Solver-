@@ -1,18 +1,23 @@
-# ♕ N-Queens Playground + AI CSP Solver ♕
-This repository showcases an intuitive visualization tool for understanding the various effects of Algorithms, Ordering Heuristics, and Filtering Techniques while solving N-Queens as a Constraint Satisfaction Problem (CSP).
+<h1 align="center">♕ N-Queens Playground + AI CSP Solver ♕</h1>
 <p align="center">
-  Here is the preview:
-</p>
-<p align="center">
-  <img src="demo3.png" width="400"/>
-  <img src="demo2.png" width="400"/>
+  This repository showcases an intuitive visualization tool for understanding the various effects of Algorithms, Ordering Heuristics, and Filtering Techniques while solving N-Queens as a Constraint Satisfaction Problem (CSP).
 </p>
 
-<p align="center">
-    <img src="demo1.png" width="400" height="650"/>
-    <img src="demo4.png" width="400" height="650"/>
-</p>
+<h3 align="center">Here is the preview:</h3>
 
+<div align="center">
+  <img src="demo3.png" width="400" alt="Demonstration of Algorithm Effectiveness"/>
+  <img src="demo2.png" width="400" alt="Ordering Heuristics in Action"/>
+</div>
+
+<div align="center">
+  <img src="demo1.png" width="400" height="650" alt="Filtering Techniques Visualization"/>
+  <img src="demo4.png" width="400" height="650" alt="Overall CSP Solver Interface"/>
+</div>
+
+<p align="center">
+  <em>Explore the capabilities of AI and CSP algorithms through these comprehensive visualizations.</em>
+</p>
 
 ## Quick Access
 You can access the N-Queens Playground hosted on Binder without the need to install anything locally.
