@@ -6,13 +6,13 @@
 <h3 align="center">Here is the preview:</h3>
 
 <div align="center">
-  <img src="demo3.png" width="400" alt="Starter Menu"/>
-  <img src="demo2.png" width="400" alt="AI CSP Solver Configuration"/>
+  <img src="demo3.png" width="400" />
+  <img src="demo2.png" width="400" />
 </div>
 
 <div align="center">
-  <img src="demo1.png" width="400" height="650" alt="Example Board"/>
-  <img src="demo4.png" width="400" height="650" alt="Example Board with "Hint" and "AI" activated"/>
+  <img src="demo1.png" width="400" height="650">
+  <img src="demo4.png" width="400" height="650" />
 </div>
 
 <p align="center">
