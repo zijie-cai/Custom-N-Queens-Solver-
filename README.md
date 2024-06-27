@@ -7,7 +7,7 @@
 
 <div align="center">
   <img src="demo3.png" width="400" height="400"/>
-  <img src="demo2.png" width="400" height="300"/>
+  <img src="demo2.png" width="400" height="300" style="vertical-align: center;" />
 </div>
 
 <div align="center">
@@ -22,7 +22,7 @@
 ## Quick Access
 You can access the N-Queens Playground hosted on Binder without the need to install anything locally.
 
-**Click the Link:** [N-Queens Playground](https://mybinder.org/v2/gh/zijie-cai/N-Queens-Playground/HEAD?urlpath=%2Fvoila%2Frender%2Fn_queens_playground.ipynb)
+**Click Here to Play:** [N-Queens Playground](https://mybinder.org/v2/gh/zijie-cai/N-Queens-Playground/HEAD?urlpath=%2Fvoila%2Frender%2Fn_queens_playground.ipynb)
 
 ## Overview 
 The N-Queens problem involves placing N number of Queens on an N x N chessboard in a way that no two Queens can threaten each other. This is formulated as a CSP problem, where the goal is to find placements for the Queens that satisfy all constraints.
