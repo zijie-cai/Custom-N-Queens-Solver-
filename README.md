@@ -44,11 +44,11 @@ This section introduces various strategies employed to tackle the N-Queens probl
 ## Use Locally
 Clone and set up the N-Queens Playground locally with these simple steps:
 - **Clone the repository:**
-  `git clone https://github.com/zijie-cai/N-Queens-Playground.git`
+  - `git clone https://github.com/zijie-cai/N-Queens-Playground.git`
 - **Set up a virtual environment:**
   - Python virtual environments are recommended for managing dependencies.
 - **Install dependencies:**
-  `pip install -r requirements.txt`
+  - `pip install -r requirements.txt`
 
 ## Potential Improvements
 - **Game Enhancements:** Introduce additional constraints to challenge users.
