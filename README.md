@@ -6,13 +6,13 @@
 <h3 align="center">Here is the preview:</h3>
 
 <div align="center">
-  <img src="demo3.png" width="400" alt="Demonstration of Algorithm Effectiveness"/>
-  <img src="demo2.png" width="400" alt="Ordering Heuristics in Action"/>
+  <img src="demo3.png" width="400" alt="Starter Menu"/>
+  <img src="demo2.png" width="400" alt="AI CSP Solver Configuration"/>
 </div>
 
 <div align="center">
-  <img src="demo1.png" width="400" height="650" alt="Filtering Techniques Visualization"/>
-  <img src="demo4.png" width="400" height="650" alt="Overall CSP Solver Interface"/>
+  <img src="demo1.png" width="400" height="650" alt="Example Board"/>
+  <img src="demo4.png" width="400" height="650" alt="Example Board with "Hint" and "AI" activated"/>
 </div>
 
 <p align="center">
