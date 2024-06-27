@@ -7,8 +7,8 @@ This repository showcases an intuitive visualization tool for understanding the 
 </p>
 
   <p align="center">
-    <img src="demo1.png" width="400" height="200"/>
-    <img src="demo4.png" width="400"/>
+    <img src="demo1.png" width="400" height="400"/>
+    <img src="demo4.png" width="400" height="400"/>
   </p>
 
 
