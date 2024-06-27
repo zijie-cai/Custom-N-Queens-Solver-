@@ -7,7 +7,7 @@
 
 <div align="center">
   <img src="demo3.png" width="400" height="400"/>
-  <img src="demo2.png" width="400" height="300" style="vertical-align: center;" />
+  <img src="demo2.png" width="400" height="300" style="vertical-align: top;" />
 </div>
 
 <div align="center">
