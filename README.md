@@ -7,7 +7,7 @@
 
 <div align="center">
   <img src="demo3.png" width="400" height="400"/>
-  <img src="demo2.png" width="400" height="300" tyle="margin-top: -20px;"/>
+  <img src="demo2.png" width="400" height="300" style="margin-top: -100px;"/>
 </div>
 
 <div align="center">
