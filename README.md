@@ -15,7 +15,7 @@
 </div>
 
 <p align="center">
-  <em>Explore the capabilities of AI and CSP algorithms through these comprehensive visualizations.</em>
+  <em>Explore the capabilities of AI and CSP algorithms through these comprehensive visualizations!</em>
 </p>
 
 ## Quick Access
