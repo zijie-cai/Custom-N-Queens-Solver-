@@ -5,4 +5,3 @@ ipython
 ipykernel
 voila
 ipympl  
-pyler
