@@ -7,10 +7,9 @@
 
 <div align="center">
   <img src="demo1.png" width="350" height="650"/>
-</div>
-<div align="center">
   <img src="demo4.png" width="350" height="650"/>
 </div>
+
 <div align="center">
   <img src="demo2.png" width="350" height="300"/>
 </div>
