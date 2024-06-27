@@ -6,10 +6,10 @@ This repository showcases an intuitive visualization tool for understanding the 
   <img src="demo2.png" width="400"/>
 </p>
 
-  <p align="center">
+<p align="center">
     <img src="demo1.png" width="400" height="650"/>
     <img src="demo4.png" width="400" height="650"/>
-  </p>
+</p>
 
 
 ## Quick Access
