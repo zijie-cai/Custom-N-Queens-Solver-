@@ -6,8 +6,8 @@
 <h3 align="center">Here is the preview:</h3>
 
 <div align="center">
-  <img src="demo3.png" width="400" height="400"/>
-  <img src="demo2.png" width="400" height="400"/>
+  <img src="demo3.png" width="400" height="375"/>
+  <img src="demo2.png" width="400" height="375"/>
 </div>
 
 <div align="center">
