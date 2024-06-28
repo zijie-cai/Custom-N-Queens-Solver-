@@ -12,7 +12,7 @@
 </div>
 
 <div align="center">
-  <img src="demo2.png" width="400" height="350"/>
+  <img src="demo2.png" width="350" height="350"/>
 </div>
 
 <p align="center">
