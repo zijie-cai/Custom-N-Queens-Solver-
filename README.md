@@ -56,7 +56,7 @@ The N-Queens problem tasks placing N Queens on an N x N chessboard so that no tw
 Clone and set up the N-Queens Playground locally with these simple steps:
 - **Clone the repository:**
   ```bash
-  git clone https://github.com/zijie-cai/N-Queens-Playground.git`
+  git clone https://github.com/zijie-cai/N-Queens-Playground.git
   ```
 - **Set up a virtual environment:**
   - Python virtual environments (conda or venv) are recommended for managing dependencies.
