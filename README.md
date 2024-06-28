@@ -60,6 +60,12 @@ Clone and set up the N-Queens Playground locally with these simple steps:
   ```
 - **Set up a virtual environment:**
   - Python virtual environments (conda or venv) are recommended for managing dependencies.
+  ```bash
+  conda create
+  ```
+  ```bash
+  python venv
+  ```
 - **Install dependencies:**
    ```bash
   pip install -r requirements.txt
