@@ -53,13 +53,18 @@ The N-Queens problem tasks placing N Queens on an N x N chessboard so that no tw
   - Ordering + Filtering.
 
 ## Use Locally
-- Clone the repository
-- Create and activate a virtual Python environment (to your liking):
-- Install required libraries using pip:
-    ```bash
-    pip install -r requirements.txt
-    ```
-    
+Clone and set up the N-Queens Playground locally with these simple steps:
+- **Clone the repository:**
+  ```bash
+  git clone https://github.com/zijie-cai/N-Queens-Playground.git`
+  ```
+- **Set up a virtual environment:**
+  - Python virtual environments are recommended for managing dependencies.
+- **Install dependencies:**
+   ```bash
+  pip install -r requirements.txt
+   ```
+
 ## Potential Improvements
-- Enhance the N-Queens Game by adding more constraints
-- Add support for more solver algorithms
+- **Game Enhancements:** Introduce additional constraints to challenge users.
+- **Solver Extensions:** Implement support for a broader range of solving algorithms.
